@@ -60,13 +60,33 @@ Mark them all as Encrypted. Save, then go to Deployments → Retry deployment.
 
 ---
 
+## Step 5 — Add KV Namespace (required for lockout protection)
+
+This is what makes brute-force impossible across all browsers and devices.
+
+1. dash.cloudflare.com → Workers & Pages → KV
+2. Click Create namespace
+3. Name it anything, e.g. shareitnow-ratelimit
+4. Go to your Pages project → Settings → Functions → KV namespace bindings
+5. Click Add binding
+   Variable name: RATE_LIMIT_KV   ← must be exactly this
+   KV namespace: select the one you just created
+6. Go to Deployments → Retry deployment
+
+Without this step the app still works but wrong-password lockout will not be enforced.
+
+---
+
 ## Done!
 
 Your site: https://your-project.pages.dev
 
 Open on any device, enter password, upload and download files freely.
 
-Max file size: ~50 MB per file.
+After 3 wrong password attempts the IP is locked out for 5 minutes.
+The lockout is server-side — refreshing, opening a new tab, or switching browsers makes no difference.
+
+Max file size: ~25 MB per file.
 
 ---
 
