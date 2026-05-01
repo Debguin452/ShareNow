@@ -1,4 +1,4 @@
-# ShareNow — Setup Guide (Cloudflare Pages)
+# ShareItNow — Setup Guide (Cloudflare Pages)
 
 No CLI needed. Done entirely through GitHub and Cloudflare websites.
 
@@ -19,7 +19,7 @@ your-repo/
 ## Step 1 — Create GitHub repo
 
 1. Go to github.com → New repository
-2. Name: sharenow (or anything), set Public
+2. Name: shareitnow (or anything), set Public
 3. Click Create repository
 4. Upload the files above using Add file → Upload files
 5. Also create uploads/.gitkeep  (Add file → Create new file, type that path, commit)
@@ -67,3 +67,11 @@ Your site: https://your-project.pages.dev
 Open on any device, enter password, upload and download files freely.
 
 Max file size: ~50 MB per file.
+
+---
+
+## Open source
+
+---
+
+*Author : Deb Guin*
