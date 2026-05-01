@@ -74,4 +74,4 @@ Max file size: ~50 MB per file.
 
 ---
 
-*Author : Deb Guin*
+* Deb Guin *
