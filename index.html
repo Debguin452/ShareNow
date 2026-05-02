@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, maximum-scale=1.0">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://api.github.com https://raw.githubusercontent.com;">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
 <title>ShareItNow</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -17,151 +16,85 @@ body {
   font-size: 16px;
 }
 
-/* ── Auth Screen ── */
+/* ── Auth ── */
 #auth {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  padding: 1.5rem;
+  display: flex; align-items: center; justify-content: center;
+  min-height: 100vh; padding: 1.5rem;
 }
-
 .auth-box {
-  background: #fff;
-  border-radius: 16px;
-  padding: 2rem 1.5rem;
-  width: 100%;
-  max-width: 340px;
-  text-align: center;
+  background: #fff; border-radius: 16px; padding: 2rem 1.5rem;
+  width: 100%; max-width: 340px; text-align: center;
   box-shadow: 0 2px 20px rgba(0,0,0,.08);
 }
-
 .auth-box .logo { font-size: 2.5rem; margin-bottom: .5rem; }
 .auth-box h1 { font-size: 1.3rem; font-weight: 700; margin-bottom: .25rem; }
 .auth-box p  { font-size: .85rem; color: #8e8e93; margin-bottom: 1.5rem; }
-
 .auth-box input {
-  width: 100%;
-  padding: .85rem 1rem;
-  border: 1.5px solid #e5e5ea;
-  border-radius: 10px;
-  font-size: 1rem;
-  text-align: center;
-  letter-spacing: .1em;
-  outline: none;
-  margin-bottom: .75rem;
-  transition: border-color .15s;
-  -webkit-appearance: none;
+  width: 100%; padding: .85rem 1rem; border: 1.5px solid #e5e5ea;
+  border-radius: 10px; font-size: 1rem; text-align: center;
+  letter-spacing: .1em; outline: none; margin-bottom: .75rem;
+  transition: border-color .15s; -webkit-appearance: none;
 }
 .auth-box input:focus { border-color: #007aff; }
 .auth-box input.shake { animation: shake .3s ease; border-color: #ff3b30; }
-.auth-box input:disabled { background: #f2f2f7; color: #8e8e93; cursor: not-allowed; border-color: #e5e5ea; }
+.auth-box input:disabled { background: #f2f2f7; color: #8e8e93; cursor: not-allowed; }
 @keyframes shake {
   0%,100%{ transform: translateX(0); }
   25%    { transform: translateX(-8px); }
   75%    { transform: translateX(8px); }
 }
-
-.auth-err {
-  font-size: .8rem;
-  margin-bottom: .75rem;
-  min-height: 1.1em;
-  line-height: 1.4;
-}
+.auth-err { font-size: .8rem; margin-bottom: .75rem; min-height: 1.1em; line-height: 1.4; }
 .auth-err.warn   { color: #ff9500; }
 .auth-err.locked { color: #ff3b30; font-weight: 500; }
 .auth-err.info   { color: #8e8e93; }
-
-.attempts-bar {
-  display: flex;
-  gap: 5px;
-  justify-content: center;
-  margin-bottom: .75rem;
-}
-.attempts-dot {
-  width: 8px; height: 8px;
-  border-radius: 50%;
-  background: #e5e5ea;
-  transition: background .2s;
-}
+.attempts-bar { display: flex; gap: 5px; justify-content: center; margin-bottom: .75rem; }
+.attempts-dot { width: 8px; height: 8px; border-radius: 50%; background: #e5e5ea; transition: background .2s; }
 .attempts-dot.used { background: #ff3b30; }
 
-/* ── App Screen ── */
+/* ── App ── */
 #app { display: none; max-width: 640px; margin: 0 auto; padding: 0 0 5rem; }
 
 .topbar {
-  background: #fff;
-  padding: 1rem 1.25rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: 1px solid #e5e5ea;
-  position: sticky;
-  top: 0;
-  z-index: 10;
+  background: #fff; padding: 1rem 1.25rem;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid #e5e5ea; position: sticky; top: 0; z-index: 10;
 }
 .topbar-left { display: flex; align-items: center; gap: .6rem; }
 .topbar-left .logo { font-size: 1.4rem; }
 .topbar-left h1 { font-size: 1rem; font-weight: 700; }
 .topbar-left .repo { font-size: .72rem; color: #8e8e93; margin-top: 1px; }
-
 .content { padding: 1rem 1rem 0; }
 
 /* ── Cards ── */
-.card {
-  background: #fff;
-  border-radius: 14px;
-  padding: 1.1rem;
-  margin-bottom: .75rem;
-}
-.card-label {
-  font-size: .72rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: .06em;
-  color: #8e8e93;
-  margin-bottom: .9rem;
-}
+.card { background: #fff; border-radius: 14px; padding: 1.1rem; margin-bottom: .75rem; }
+.card-label { font-size: .72rem; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: #8e8e93; margin-bottom: .9rem; }
+.list-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: .9rem; }
 
 /* ── Buttons ── */
-button, .btn-link {
-  cursor: pointer;
-  border: none;
-  font-family: inherit;
-  font-size: .88rem;
-  font-weight: 500;
-  border-radius: 10px;
-  padding: .6rem 1.1rem;
+button {
+  cursor: pointer; border: none; font-family: inherit; font-size: .88rem;
+  font-weight: 500; border-radius: 10px; padding: .6rem 1.1rem;
   transition: opacity .15s, background .15s;
-  display: inline-flex;
-  align-items: center;
-  gap: .35rem;
-  text-decoration: none;
+  display: inline-flex; align-items: center; gap: .35rem;
   -webkit-tap-highlight-color: transparent;
 }
-button:active, .btn-link:active { opacity: .7; }
-
-.btn-blue   { background: #007aff; color: #fff; }
-.btn-ghost  { background: #f2f2f7; color: #3a3a3c; }
-.btn-green  { background: #e3f9ed; color: #34c759; }
-.btn-red    { background: #fff0ee; color: #ff3b30; }
-.btn-full   { width: 100%; justify-content: center; }
-.btn-sm     { padding: .45rem .85rem; font-size: .8rem; border-radius: 8px; }
-
+button:active { opacity: .7; }
+.btn-blue  { background: #007aff; color: #fff; }
+.btn-ghost { background: #f2f2f7; color: #3a3a3c; }
+.btn-green { background: #e3f9ed; color: #34c759; }
+.btn-red   { background: #fff0ee; color: #ff3b30; }
+.btn-purple{ background: #f0eeff; color: #5856d6; }
+.btn-full  { width: 100%; justify-content: center; }
+.btn-sm    { padding: .45rem .85rem; font-size: .8rem; border-radius: 8px; }
 button:disabled { opacity: .45; cursor: default; }
 
-/* ── Drop Zone ── */
+/* ── Drop zone ── */
 #drop-zone {
-  border: 2px dashed #c7c7cc;
-  border-radius: 12px;
-  padding: 1.8rem 1rem;
-  text-align: center;
-  cursor: pointer;
-  position: relative;
-  transition: border-color .15s, background .15s;
-  -webkit-tap-highlight-color: transparent;
+  border: 2px dashed #c7c7cc; border-radius: 12px; padding: 1.8rem 1rem;
+  text-align: center; cursor: pointer; position: relative;
+  transition: border-color .15s, background .15s; -webkit-tap-highlight-color: transparent;
 }
-#drop-zone.over, #drop-zone:active { border-color: #007aff; background: #f0f7ff; }
+#drop-zone.over { border-color: #007aff; background: #f0f7ff; }
 #drop-zone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
 #drop-zone .dz-icon { font-size: 2rem; margin-bottom: .4rem; }
 #drop-zone .dz-title { font-size: .9rem; font-weight: 600; margin-bottom: .2rem; }
@@ -169,16 +102,7 @@ button:disabled { opacity: .45; cursor: default; }
 
 /* ── Queue ── */
 #queue { margin-top: .75rem; display: none; }
-
-.q-item {
-  display: flex;
-  align-items: center;
-  gap: .6rem;
-  padding: .6rem .75rem;
-  background: #f8f8f8;
-  border-radius: 9px;
-  margin-bottom: .4rem;
-}
+.q-item { display: flex; align-items: center; gap: .6rem; padding: .6rem .75rem; background: #f8f8f8; border-radius: 9px; margin-bottom: .4rem; }
 .q-icon { font-size: 1.1rem; flex-shrink: 0; }
 .q-info { flex: 1; min-width: 0; }
 .q-name { font-size: .83rem; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -186,71 +110,66 @@ button:disabled { opacity: .45; cursor: default; }
 .q-bar  { height: 3px; background: #e5e5ea; border-radius: 2px; margin-top: 5px; overflow: hidden; }
 .q-fill { height: 100%; background: #007aff; border-radius: 2px; transition: width .2s; width: 0; }
 .q-st   { font-size: .75rem; font-weight: 500; flex-shrink: 0; }
-.q-st.wait { color: #8e8e93; }
-.q-st.go   { color: #007aff; }
-.q-st.ok   { color: #34c759; }
-.q-st.fail { color: #ff3b30; }
-
+.q-st.wait { color: #8e8e93; } .q-st.go { color: #007aff; } .q-st.ok { color: #34c759; } .q-st.fail { color: #ff3b30; }
 #ubtns { display: none; gap: .5rem; margin-top: .75rem; flex-wrap: wrap; }
 
-/* ── File List ── */
-#filelist { margin-top: .15rem; }
+/* ── Breadcrumb ── */
+#breadcrumb { display: flex; align-items: center; gap: .2rem; flex-wrap: wrap; margin-bottom: .75rem; font-size: .82rem; }
+.bc-seg { color: #007aff; cursor: pointer; font-weight: 500; }
+.bc-seg:hover { text-decoration: underline; }
+.bc-sep { color: #c7c7cc; margin: 0 .1rem; }
+.bc-cur { color: #3a3a3c; font-weight: 600; }
 
-.f-row {
-  display: flex;
-  align-items: center;
-  gap: .6rem;
-  padding: .75rem 0;
-  border-bottom: 1px solid #f2f2f7;
-}
+/* ── File list ── */
+#filelist { margin-top: .15rem; }
+.f-row { display: flex; align-items: center; gap: .6rem; padding: .75rem 0; border-bottom: 1px solid #f2f2f7; }
 .f-row:last-child { border-bottom: none; }
 .f-icon { font-size: 1.3rem; flex-shrink: 0; }
-.f-info { flex: 1; min-width: 0; }
+.f-info { flex: 1; min-width: 0; cursor: pointer; }
 .f-name { font-size: .88rem; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .f-size { font-size: .75rem; color: #8e8e93; }
+.f-dir .f-name { color: #007aff; }
 .f-btns { display: flex; gap: .4rem; flex-shrink: 0; }
-
 .empty { text-align: center; padding: 2rem .5rem; color: #8e8e93; font-size: .88rem; }
 .empty .ei { font-size: 2rem; margin-bottom: .5rem; }
 
-/* ── List header ── */
-.list-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: .9rem;
+/* ── Modal ── */
+#modal-bg {
+  display: none; position: fixed; inset: 0; background: rgba(0,0,0,.35);
+  z-index: 50; align-items: center; justify-content: center; padding: 1rem;
 }
+#modal-bg.show { display: flex; }
+.modal {
+  background: #fff; border-radius: 16px; padding: 1.5rem; width: 100%;
+  max-width: 320px; box-shadow: 0 8px 40px rgba(0,0,0,.18);
+}
+.modal h2 { font-size: 1rem; font-weight: 700; margin-bottom: .15rem; }
+.modal p  { font-size: .8rem; color: #8e8e93; margin-bottom: 1rem; }
+.modal input {
+  width: 100%; padding: .75rem 1rem; border: 1.5px solid #e5e5ea;
+  border-radius: 10px; font-size: .95rem; outline: none; margin-bottom: .75rem;
+  transition: border-color .15s;
+}
+.modal input:focus { border-color: #007aff; }
+.modal-btns { display: flex; gap: .5rem; }
+.modal-btns button { flex: 1; justify-content: center; }
 
 /* ── Toast ── */
 #toast {
-  position: fixed;
-  bottom: 1.5rem;
-  left: 50%;
+  position: fixed; bottom: 1.5rem; left: 50%;
   transform: translateX(-50%) translateY(100px);
-  padding: .6rem 1.2rem;
-  border-radius: 20px;
-  font-size: .84rem;
-  font-weight: 500;
-  color: #fff;
-  background: #1c1c1e;
-  white-space: nowrap;
-  z-index: 100;
-  transition: transform .25s ease;
-  pointer-events: none;
-  max-width: calc(100vw - 3rem);
-  overflow: hidden;
-  text-overflow: ellipsis;
+  padding: .6rem 1.2rem; border-radius: 20px; font-size: .84rem; font-weight: 500;
+  color: #fff; background: #1c1c1e; white-space: nowrap; z-index: 100;
+  transition: transform .25s ease; pointer-events: none;
+  max-width: calc(100vw - 3rem); overflow: hidden; text-overflow: ellipsis;
 }
-#toast.show  { transform: translateX(-50%) translateY(0); }
-#toast.ok    { background: #34c759; }
-#toast.err   { background: #ff3b30; }
+#toast.show { transform: translateX(-50%) translateY(0); }
+#toast.ok   { background: #34c759; }
+#toast.err  { background: #ff3b30; }
 
 .spin { animation: spin .7s linear infinite; display: inline-block; }
 @keyframes spin { to { transform: rotate(360deg); } }
-
-@media (max-width: 400px) {
-  .card { border-radius: 12px; padding: .9rem; }
-}
+@media (max-width: 400px) { .card { border-radius: 12px; padding: .9rem; } }
 </style>
 </head>
 <body>
@@ -261,7 +180,7 @@ button:disabled { opacity: .45; cursor: default; }
     <div class="logo">🔗</div>
     <h1>ShareItNow</h1>
     <p>Enter your access password</p>
-    <div class="attempts-bar" id="attempts-bar">
+    <div class="attempts-bar">
       <div class="attempts-dot" id="dot0"></div>
       <div class="attempts-dot" id="dot1"></div>
       <div class="attempts-dot" id="dot2"></div>
@@ -287,14 +206,14 @@ button:disabled { opacity: .45; cursor: default; }
 
   <div class="content">
 
-    <!-- Upload -->
+    <!-- Upload card -->
     <div class="card">
       <div class="card-label">Upload Files</div>
       <div id="drop-zone">
         <input type="file" id="file-in" multiple onchange="pickFiles(this.files)">
         <div class="dz-icon">📁</div>
         <div class="dz-title">Tap to choose files</div>
-        <div class="dz-sub">Any type · Multiple files</div>
+        <div class="dz-sub" id="dz-dest">Uploading to root</div>
       </div>
       <div id="queue"></div>
       <div id="ubtns">
@@ -303,15 +222,34 @@ button:disabled { opacity: .45; cursor: default; }
       </div>
     </div>
 
-    <!-- Files -->
+    <!-- Files card -->
     <div class="card">
       <div class="list-header">
-        <div class="card-label" style="margin:0">Your Files</div>
-        <button class="btn-ghost btn-sm" onclick="loadFiles()">↻ Refresh</button>
+        <div class="card-label" style="margin:0">Files</div>
+        <div style="display:flex;gap:.4rem">
+          <button class="btn-purple btn-sm" onclick="openMkdir()">+ Folder</button>
+          <button class="btn-ghost btn-sm" onclick="loadFiles()">↻</button>
+        </div>
       </div>
+      <div id="breadcrumb"></div>
       <div id="filelist"><div class="empty"><div class="ei"><span class="spin">↻</span></div>Loading…</div></div>
     </div>
 
+  </div>
+</div>
+
+<!-- New Folder Modal -->
+<div id="modal-bg" onclick="closeMkdir(event)">
+  <div class="modal">
+    <h2>📁 New Folder</h2>
+    <p id="mkdir-hint">Creating inside root</p>
+    <input id="folder-name" type="text" placeholder="Folder name" maxlength="100"
+           autocorrect="off" autocapitalize="off" spellcheck="false"
+           onkeydown="if(event.key==='Enter')doMkdir()">
+    <div class="modal-btns">
+      <button class="btn-ghost" onclick="closeMkdir()">Cancel</button>
+      <button class="btn-blue" onclick="doMkdir()">Create</button>
+    </div>
   </div>
 </div>
 
@@ -319,163 +257,89 @@ button:disabled { opacity: .45; cursor: default; }
 
 <script>
 // ─────────────────────────────────────────────────────────────────────────────
-// Security constants (must match server)
-// ─────────────────────────────────────────────────────────────────────────────
-const MAX_ATTEMPTS   = 3;
-const LOCKOUT_MS     = 5 * 60 * 1000; // 5 minutes
-const LS_UNTIL       = 'sin_lu';      // localStorage key for lockout timestamp
-const SS_TOKEN       = 'sin_tk';      // sessionStorage key for session token
-
-// ─────────────────────────────────────────────────────────────────────────────
 // State
 // ─────────────────────────────────────────────────────────────────────────────
-let SESSION_TOKEN = '';
-let pending       = [];
-let lockoutTimer  = null;
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Lockout helpers (client-side — localStorage so it persists across refreshes)
-// Real enforcement is server-side; this is just UI.
-// ─────────────────────────────────────────────────────────────────────────────
-function getLockout() {
-  try {
-    const v = localStorage.getItem(LS_UNTIL);
-    if (!v) return null;
-    const ts = parseInt(v, 10);
-    return isNaN(ts) || ts <= Date.now() ? null : ts;
-  } catch { return null; }
-}
-
-function saveLockout(ts) {
-  try { localStorage.setItem(LS_UNTIL, String(ts)); } catch {}
-}
-
-function clearLockout() {
-  try { localStorage.removeItem(LS_UNTIL); } catch {}
-}
-
-function startLockoutUI(until) {
-  clearTimeout(lockoutTimer);
-  const pw  = document.getElementById('pw');
-  const btn = document.getElementById('login-btn');
-  const err = document.getElementById('pw-err');
-  pw.disabled  = true;
-  btn.disabled = true;
-  pw.value     = '';
-  // Mark all dots red
-  for (let i = 0; i < MAX_ATTEMPTS; i++) {
-    const d = document.getElementById('dot' + i);
-    if (d) d.classList.add('used');
-  }
-
-  function tick() {
-    const remaining = Math.max(0, until - Date.now());
-    if (remaining === 0) {
-      pw.disabled  = false;
-      btn.disabled = false;
-      err.textContent = '';
-      err.className   = 'auth-err';
-      clearLockout();
-      resetDots();
-      return;
-    }
-    const m = Math.floor(remaining / 60000);
-    const s = Math.floor((remaining % 60000) / 1000).toString().padStart(2, '0');
-    err.textContent = `⛔ Access denied — try again in ${m}:${s}`;
-    err.className   = 'auth-err locked';
-    lockoutTimer    = setTimeout(tick, 500);
-  }
-  tick();
-}
-
-function resetDots(usedCount = 0) {
-  for (let i = 0; i < MAX_ATTEMPTS; i++) {
-    const d = document.getElementById('dot' + i);
-    if (d) d.classList.toggle('used', i < usedCount);
-  }
-}
+const MAX_ATTEMPTS = 3;
+let PASS    = '';   // stored in sessionStorage after login
+let pending = [];
+let curPath = '';   // current sub-path (relative to GITHUB_FOLDER root)
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Auth
 // ─────────────────────────────────────────────────────────────────────────────
 async function login() {
-  // Client-side lockout check first
-  const until = getLockout();
-  if (until) { startLockoutUI(until); return; }
-
   const pwEl = document.getElementById('pw');
-  const pw   = pwEl.value;
+  const pw   = pwEl.value.trim();
   if (!pw) return;
 
   const btn = document.getElementById('login-btn');
-  const err = document.getElementById('pw-err');
-  btn.disabled = true;
+  const errEl = document.getElementById('pw-err');
+  btn.disabled    = true;
   btn.textContent = 'Checking…';
 
   try {
     const r = await fetch('/api/auth', {
-      method:  'POST',
+      method : 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify({ password: pw }),
+      body   : JSON.stringify({ password: pw }),
     });
 
-    // Wipe the input immediately regardless of outcome
-    pwEl.value = '';
-
     if (r.ok) {
-      const data = await r.json();
-      SESSION_TOKEN = data.token || '';
-      try { sessionStorage.setItem(SS_TOKEN, SESSION_TOKEN); } catch {}
-      clearLockout();
-      resetDots(0);
-      err.textContent = '';
+      PASS = pw;
+      pwEl.value = '';
+      try { sessionStorage.setItem('sin_pw', pw); } catch {}
+      resetDots();
+      errEl.textContent = '';
       showApp();
     } else {
+      pwEl.value = '';
       const data = await r.json().catch(() => ({}));
 
       if (r.status === 429) {
-        // Server locked us out — read when to retry
-        const lockedUntil =
-          parseInt(r.headers.get('X-Locked-Until') || '0', 10) ||
-          (Date.now() + LOCKOUT_MS);
-        saveLockout(lockedUntil);
-        startLockoutUI(lockedUntil);
+        // Server locked out — show message, disable until server says ok
+        errEl.textContent = '⛔ ' + (data.error || 'Access denied. Try again in 5 minutes.');
+        errEl.className   = 'auth-err locked';
+        btn.disabled      = true;
+        btn.textContent   = 'Locked out';
+
+        // Re-enable after lockout window (read from header or default 5 min)
+        const retryAfter = parseInt(r.headers.get('Retry-After') || '300', 10) * 1000;
+        setTimeout(() => {
+          btn.disabled    = false;
+          btn.textContent = 'Unlock';
+          errEl.textContent = '';
+          errEl.className = 'auth-err';
+          resetDots();
+        }, retryAfter);
 
       } else {
-        // Wrong password — show remaining attempts
         const remaining = parseInt(r.headers.get('X-Attempts-Remaining') || '0', 10);
-        const usedCount = MAX_ATTEMPTS - remaining;
-        resetDots(usedCount);
+        resetDots(MAX_ATTEMPTS - remaining);
 
-        if (remaining <= 1) {
-          err.textContent = remaining === 0
-            ? 'Last attempt failed — you are now locked out'
-            : '⚠ Incorrect password — 1 attempt remaining!';
-          err.className = 'auth-err warn';
-        } else {
-          err.textContent = `Incorrect password — ${remaining} attempts remaining`;
-          err.className = 'auth-err warn';
-        }
+        errEl.textContent = data.error || 'Incorrect password.';
+        errEl.className   = remaining <= 1 ? 'auth-err warn' : 'auth-err warn';
 
         pwEl.classList.add('shake');
         setTimeout(() => pwEl.classList.remove('shake'), 350);
-
         btn.disabled    = false;
         btn.textContent = 'Unlock';
       }
     }
   } catch {
     pwEl.value      = '';
-    err.textContent = 'Connection error — please try again';
-    err.className   = 'auth-err info';
+    errEl.textContent = 'Connection error — please try again';
+    errEl.className = 'auth-err info';
     btn.disabled    = false;
     btn.textContent = 'Unlock';
   }
 }
 
-document.getElementById('pw').addEventListener('keydown', e => {
-  if (e.key === 'Enter') login();
-});
+document.getElementById('pw').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
+
+function resetDots(used = 0) {
+  for (let i = 0; i < MAX_ATTEMPTS; i++)
+    document.getElementById('dot' + i)?.classList.toggle('used', i < used);
+}
 
 function showApp() {
   document.getElementById('auth').style.display = 'none';
@@ -485,63 +349,34 @@ function showApp() {
 }
 
 function logout() {
-  SESSION_TOKEN = '';
-  try { sessionStorage.removeItem(SS_TOKEN); } catch {}
+  PASS = '';
+  try { sessionStorage.removeItem('sin_pw'); } catch {}
   document.getElementById('auth').style.display = 'flex';
   document.getElementById('app').style.display  = 'none';
-  document.getElementById('pw').value           = '';
+  document.getElementById('pw').value = '';
   pending = [];
-  resetDots(0);
-  document.getElementById('pw-err').textContent = '';
+  curPath = '';
+  resetDots();
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Session restore (token, NOT password)
-// ─────────────────────────────────────────────────────────────────────────────
-(async function restoreSession() {
-  // If locked out client-side, show that immediately
-  const until = getLockout();
-  if (until) { startLockoutUI(until); return; }
-
-  // Try to restore a saved token
-  let savedToken = '';
-  try { savedToken = sessionStorage.getItem(SS_TOKEN) || ''; } catch {}
-  if (!savedToken) return;
-
-  // Verify the token is still valid (will return 401 if expired)
+// Restore session on page load
+(function restoreSession() {
   try {
-    const r = await fetch('/api/meta', {
-      headers: { 'X-Session-Token': savedToken },
-    });
-    if (r.ok) {
-      SESSION_TOKEN = savedToken;
-      const data = await r.json();
-      document.getElementById('repo-name').textContent = data.repo || '';
-      showApp();
-    } else {
-      // Token expired or invalid — clear it, stay on login
-      try { sessionStorage.removeItem(SS_TOKEN); } catch {}
-    }
+    const saved = sessionStorage.getItem('sin_pw');
+    if (saved) { PASS = saved; showApp(); }
   } catch {}
 })();
 
 // ─────────────────────────────────────────────────────────────────────────────
-// API helpers — token sent, never the password
+// API helper
 // ─────────────────────────────────────────────────────────────────────────────
-const H = (extra = {}) => ({
-  'X-Session-Token': SESSION_TOKEN,
-  'Content-Type':    'application/json',
-  ...extra,
-});
+function H(extra = {}) {
+  return { 'X-Password': PASS, 'Content-Type': 'application/json', ...extra };
+}
 
-async function apiCall(url, options = {}) {
-  const r = await fetch(url, { ...options, headers: H(options.headers) });
-  if (r.status === 401) {
-    // Session expired — go back to login
-    toast('Session expired — please log in again', 'err');
-    setTimeout(logout, 1500);
-    throw new Error('Session expired');
-  }
+async function api(url, opts = {}) {
+  const r = await fetch(url, { ...opts, headers: H(opts.headers || {}) });
+  if (r.status === 401) { toast('Session ended — please log in again', 'err'); setTimeout(logout, 1500); throw new Error('auth'); }
   return r;
 }
 
@@ -549,78 +384,159 @@ async function apiCall(url, options = {}) {
 // Meta
 // ─────────────────────────────────────────────────────────────────────────────
 async function loadMeta() {
-  const r = await fetch('/api/meta', { headers: H() }).catch(() => null);
-  if (r && r.ok) {
-    const d = await r.json();
-    document.getElementById('repo-name').textContent = d.repo || '';
-  }
+  try {
+    const r = await api('/api/meta');
+    if (r.ok) document.getElementById('repo-name').textContent = (await r.json()).repo || '';
+  } catch {}
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Files
+// File listing + navigation
 // ─────────────────────────────────────────────────────────────────────────────
-async function loadFiles() {
+async function loadFiles(path) {
+  if (path !== undefined) curPath = path;
+  updateBreadcrumb();
+  updateDzLabel();
+
   const el = document.getElementById('filelist');
   el.innerHTML = '<div class="empty"><div class="ei"><span class="spin">↻</span></div>Loading…</div>';
+
   try {
-    const r = await apiCall('/api/files');
+    const r = await api(`/api/files?path=${encodeURIComponent(curPath)}`);
     if (!r.ok) throw new Error((await r.json()).error || 'Error');
-    renderFiles(await r.json());
+    const { dirs, files } = await r.json();
+    renderItems(dirs, files);
   } catch (e) {
-    if (e.message !== 'Session expired')
-      el.innerHTML = `<div class="empty">⚠ ${esc(e.message)}</div>`;
+    if (e.message !== 'auth') el.innerHTML = `<div class="empty">⚠ ${esc(e.message)}</div>`;
   }
 }
 
-function renderFiles(files) {
+function renderItems(dirs, files) {
   const el = document.getElementById('filelist');
-  if (!files.length) {
-    el.innerHTML = '<div class="empty"><div class="ei">📭</div>No files yet</div>';
+  if (!dirs.length && !files.length) {
+    el.innerHTML = '<div class="empty"><div class="ei">📭</div>Empty folder</div>';
     return;
   }
-  el.innerHTML = files.map(f => `
+
+  const dirHTML = dirs.map(d => `
+    <div class="f-row f-dir">
+      <span class="f-icon">📂</span>
+      <div class="f-info" onclick="loadFiles(${JSON.stringify(curPath ? curPath + '/' + d.name : d.name)})">
+        <div class="f-name">${esc(d.name)}</div>
+        <div class="f-size">Folder</div>
+      </div>
+    </div>
+  `).join('');
+
+  const fileHTML = files.map(f => `
     <div class="f-row">
-      <span class="f-icon">${icon(f.name)}</span>
+      <span class="f-icon">${fileIcon(f.name)}</span>
       <div class="f-info">
         <div class="f-name" title="${esc(f.name)}">${esc(f.name)}</div>
         <div class="f-size">${fmt(f.size)}</div>
       </div>
       <div class="f-btns">
-        <button class="btn-green btn-sm" onclick="downloadFile('${esc(f.name)}')">↓</button>
-        <button class="btn-red btn-sm" onclick="delFile('${esc(f.name)}','${esc(f.sha)}')">✕</button>
+        <button class="btn-green btn-sm" onclick="downloadFile(${JSON.stringify(f.name)})">↓</button>
+        <button class="btn-red btn-sm" onclick="delFile(${JSON.stringify(f.name)},${JSON.stringify(f.sha)})">✕</button>
       </div>
     </div>
   `).join('');
+
+  el.innerHTML = dirHTML + fileHTML;
 }
 
+function updateBreadcrumb() {
+  const bc = document.getElementById('breadcrumb');
+  if (!curPath) { bc.innerHTML = ''; return; }
+
+  const parts = curPath.split('/');
+  let html = `<span class="bc-seg" onclick="loadFiles('')">Root</span>`;
+  parts.forEach((p, i) => {
+    const pathTo = parts.slice(0, i + 1).join('/');
+    html += `<span class="bc-sep">›</span>`;
+    if (i === parts.length - 1) {
+      html += `<span class="bc-cur">${esc(p)}</span>`;
+    } else {
+      html += `<span class="bc-seg" onclick="loadFiles(${JSON.stringify(pathTo)})">${esc(p)}</span>`;
+    }
+  });
+  bc.innerHTML = html;
+}
+
+function updateDzLabel() {
+  document.getElementById('dz-dest').textContent =
+    curPath ? `Uploading into /${curPath}` : 'Uploading to root';
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// New folder
+// ─────────────────────────────────────────────────────────────────────────────
+function openMkdir() {
+  document.getElementById('mkdir-hint').textContent =
+    curPath ? `Creating inside /${curPath}` : 'Creating inside root';
+  document.getElementById('folder-name').value = '';
+  document.getElementById('modal-bg').classList.add('show');
+  setTimeout(() => document.getElementById('folder-name').focus(), 50);
+}
+
+function closeMkdir(e) {
+  if (!e || e.target === document.getElementById('modal-bg'))
+    document.getElementById('modal-bg').classList.remove('show');
+}
+
+async function doMkdir() {
+  const nameEl = document.getElementById('folder-name');
+  const name   = nameEl.value.trim();
+  if (!name) return;
+
+  document.getElementById('modal-bg').classList.remove('show');
+  toast('Creating folder…');
+
+  try {
+    const r = await api('/api/mkdir', {
+      method: 'POST',
+      body: JSON.stringify({ name, path: curPath }),
+    });
+    if (r.ok) { toast('Folder created', 'ok'); loadFiles(); }
+    else { const d = await r.json(); toast('Error: ' + d.error, 'err'); }
+  } catch (e) { if (e.message !== 'auth') toast('Failed to create folder', 'err'); }
+}
+
+document.getElementById('folder-name').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doMkdir();
+  if (e.key === 'Escape') closeMkdir();
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Download
+// ─────────────────────────────────────────────────────────────────────────────
 async function downloadFile(name) {
   toast('Downloading…');
   try {
-    const r = await fetch('/api/download/' + encodeURIComponent(name), {
-      headers: { 'X-Session-Token': SESSION_TOKEN },
-    });
+    const url = `/api/download?name=${encodeURIComponent(name)}&path=${encodeURIComponent(curPath)}`;
+    const r = await fetch(url, { headers: { 'X-Password': PASS } });
     if (!r.ok) throw new Error('Not found');
     const blob = await r.blob();
-    const url  = URL.createObjectURL(blob);
-    const a    = document.createElement('a');
-    a.href     = url;
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
     a.download = name;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-    setTimeout(() => URL.revokeObjectURL(url), 2000);
+    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
     toast('Downloaded!', 'ok');
-  } catch {
-    toast('Download failed', 'err');
-  }
+  } catch { toast('Download failed', 'err'); }
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Delete
+// ─────────────────────────────────────────────────────────────────────────────
 async function delFile(name, sha) {
   if (!confirm(`Delete "${name}"?`)) return;
   try {
-    const r = await apiCall('/api/delete', {
+    const r = await api('/api/delete', {
       method: 'DELETE',
-      body:   JSON.stringify({ name, sha }),
+      body: JSON.stringify({ name, sha, path: curPath }),
     });
     if (r.ok) { toast('Deleted', 'ok'); loadFiles(); }
     else toast('Delete failed', 'err');
@@ -628,13 +544,12 @@ async function delFile(name, sha) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Upload
+// Upload queue
 // ─────────────────────────────────────────────────────────────────────────────
 function pickFiles(files) {
-  for (const f of files) {
+  for (const f of files)
     if (!pending.find(p => p.f.name === f.name && p.f.size === f.size))
       pending.push({ f, status: 'wait' });
-  }
   renderQ();
 }
 
@@ -646,7 +561,7 @@ function renderQ() {
   ub.style.display = 'flex';
   el.innerHTML = pending.map((it, i) => `
     <div class="q-item">
-      <span class="q-icon">${icon(it.f.name)}</span>
+      <span class="q-icon">${fileIcon(it.f.name)}</span>
       <div class="q-info">
         <div class="q-name">${esc(it.f.name)}</div>
         <div class="q-size">${fmt(it.f.size)}</div>
@@ -666,8 +581,7 @@ function clearQ() {
 async function uploadAll() {
   if (!pending.length) return;
   const btn = document.getElementById('up-btn');
-  btn.disabled    = true;
-  btn.textContent = 'Uploading…';
+  btn.disabled = true; btn.textContent = 'Uploading…';
 
   for (let i = 0; i < pending.length; i++) {
     const it = pending[i];
@@ -676,23 +590,22 @@ async function uploadAll() {
     try {
       const b64 = await toB64(it.f);
       setQ(i, 'go', 65);
-      const r = await apiCall('/api/upload', {
+      const r = await api('/api/upload', {
         method: 'POST',
-        body:   JSON.stringify({ name: it.f.name, content: b64 }),
+        body: JSON.stringify({ name: it.f.name, content: b64, path: curPath }),
       });
       if (!r.ok) throw new Error((await r.json()).error || 'Failed');
       setQ(i, 'ok', 100);
     } catch (e) {
       setQ(i, 'fail', 0);
-      if (e.message !== 'Session expired') toast('Error: ' + e.message, 'err');
+      if (e.message !== 'auth') toast('Error: ' + e.message, 'err');
     }
   }
 
-  btn.disabled    = false;
-  btn.textContent = '⬆ Upload';
+  btn.disabled = false; btn.textContent = '⬆ Upload';
   const failed = pending.filter(p => p.status === 'fail').length;
   if (!failed) { toast('All uploaded!', 'ok'); clearQ(); }
-  else toast(failed + ' failed', 'err');
+  else toast(failed + ' file(s) failed', 'err');
   loadFiles();
 }
 
@@ -713,9 +626,7 @@ function toB64(file) {
   });
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
 // Drag & drop
-// ─────────────────────────────────────────────────────────────────────────────
 const dz = document.getElementById('drop-zone');
 dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('over'); });
 dz.addEventListener('dragleave', () => dz.classList.remove('over'));
@@ -726,21 +637,19 @@ dz.addEventListener('drop', e => { e.preventDefault(); dz.classList.remove('over
 // ─────────────────────────────────────────────────────────────────────────────
 function stl(s) { return { wait:'Ready', go:'Uploading…', ok:'✓ Done', fail:'✗ Error' }[s]; }
 function fmt(b) {
-  if (b < 1024)    return b + ' B';
-  if (b < 1048576) return (b / 1024).toFixed(1) + ' KB';
-  return (b / 1048576).toFixed(1) + ' MB';
+  if (!b) return '';
+  if (b < 1024) return b + ' B';
+  if (b < 1048576) return (b/1024).toFixed(1) + ' KB';
+  return (b/1048576).toFixed(1) + ' MB';
 }
 function esc(s) {
   return String(s)
-    .replace(/&/g,'&amp;')
-    .replace(/"/g,'&quot;')
-    .replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;')
-    .replace(/'/g,'&#39;');
+    .replace(/&/g,'&amp;').replace(/"/g,'&quot;')
+    .replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/'/g,'&#39;');
 }
-function icon(n) {
+function fileIcon(n) {
   const e = String(n).split('.').pop().toLowerCase();
-  const m = {
+  return ({
     pdf:'📄', doc:'📝', docx:'📝', txt:'📃', md:'📃',
     jpg:'🖼️', jpeg:'🖼️', png:'🖼️', gif:'🖼️', webp:'🖼️', svg:'🖼️',
     mp4:'🎬', mov:'🎬', avi:'🎬', mkv:'🎬',
@@ -749,13 +658,12 @@ function icon(n) {
     js:'💻', ts:'💻', py:'💻', html:'💻', css:'💻', json:'💻',
     xls:'📊', xlsx:'📊', csv:'📊', ppt:'📽️', pptx:'📽️',
     c:'💻', cpp:'💻', h:'💻', go:'💻', rs:'💻',
-  };
-  return m[e] || '📁';
+  })[e] || '📄';
 }
 function toast(msg, type = '') {
   const el = document.getElementById('toast');
   el.textContent = msg;
-  el.className   = 'show ' + type;
+  el.className = 'show ' + type;
   clearTimeout(el._t);
   el._t = setTimeout(() => { el.className = ''; }, 3000);
 }
