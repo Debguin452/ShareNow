@@ -343,7 +343,7 @@ body {
     <div class="card">
       <div class="card-header">
         <div class="card-title">Upload</div>
-        <span style="font-size:.73rem;color:#bbb">Max 10 GB per file</span>
+        <span style="font-size:.73rem;color:#bbb">Max 5 GB per file</span>
       </div>
       <div class="drop-zone" id="drop-zone">
         <input type="file" id="file-input" multiple onchange="onFilePicked(this.files)">
@@ -354,7 +354,7 @@ body {
           </svg>
         </div>
         <div class="drop-zone-title">Click to select files or drag them here</div>
-        <div class="drop-zone-sub">Files above 20 MB are split into secure chunks automatically</div>
+        <div class="drop-zone-sub">Files above 5 MB are split into 10 MB chunks automatically</div>
       </div>
       <div class="upload-queue" id="upload-queue"></div>
       <div class="upload-actions" id="upload-actions">
@@ -389,9 +389,9 @@ body {
 // Files above CHUNK_THRESHOLD are split into CHUNK_SIZE pieces and
 // uploaded via /api/upload-chunk + /api/finalize-upload.
 // Files at or below go through the single /api/upload endpoint.
-const CHUNK_THRESHOLD = 20 * 1024 * 1024;   // 20 MB — start chunking above this
-const CHUNK_SIZE      = 90 * 1024 * 1024;   // 90 MB per chunk (GitHub blob limit ~100 MB)
-const MAX_FILE_SIZE   = 10 * 1024 * 1024 * 1024; // 10 GB total (111 chunks × 90 MB)
+const CHUNK_THRESHOLD = 5  * 1024 * 1024;   // 5 MB — start chunking above this
+const CHUNK_SIZE      = 10 * 1024 * 1024;   // 10 MB per chunk → ~13 MB base64 JSON, never times out
+const MAX_FILE_SIZE   = 5  * 1024 * 1024 * 1024; // 5 GB total (512 chunks × 10 MB)
 
 const BLOCKED_EXTS = new Set([
   'exe','bat','cmd','com','msi','ps1','psm1',
@@ -678,7 +678,7 @@ dropZone.addEventListener('drop',e=>{e.preventDefault();dropZone.classList.remov
 function onFilePicked(fileList) {
   const rejected=[];
   for(const f of fileList){
-    if(f.size>MAX_FILE_SIZE){rejected.push(`"${f.name}" exceeds the 10 GB limit.`);continue;}
+    if(f.size>MAX_FILE_SIZE){rejected.push(`"${f.name}" exceeds the 5 GB limit.`);continue;}
     const ext=f.name.split('.').pop()?.toLowerCase()||'';
     if(BLOCKED_EXTS.has(ext)){rejected.push(`"${f.name}" — file type not permitted.`);continue;}
     if(!uploadPending.find(p=>p.file.name===f.name&&p.file.size===f.size)) uploadPending.push({file:f,status:'wait'});
