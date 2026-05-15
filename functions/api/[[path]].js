@@ -23,7 +23,7 @@ const SESSION_TTL      = 8  * 60 * 60 * 1000;
 const RATE_WINDOW_MS   = 15 * 60 * 1000;
 const RATE_MAX_LOGIN   = 5;
 const RATE_MAX_SIGNUP  = 3;
-const CHUNK_MAX_BYTES  = 12 * 1024 * 1024;   // 12 MB max per chunk upload (10 MB + headroom)
+const CHUNK_B64_MAX    = 14 * 1024 * 1024;   // max base64 string length per chunk (10 MB raw ≈ 13.4 MB b64)
 const SMALL_MAX_BYTES  =  5 * 1024 * 1024;   // ≤ 5 MB → Contents API; above → Blobs API
 const MAX_TOTAL_CHUNKS = 512;                  // 512 × 10 MB = ~5 GB maximum
 const SHA_RE           = /^[0-9a-f]{40}$/i;
@@ -243,6 +243,18 @@ function checkMagic(bytes) {
     if (ok) return false;
   }
   return true;
+}
+
+// Decode just the first 16 bytes from a base64 string and run magic check.
+// Used when the Worker receives pre-encoded content from the browser.
+function checkMagicBase64(b64) {
+  try {
+    const prefix = b64.slice(0, 24).replace(/-/g, '+').replace(/_/g, '/');
+    const bin = atob(prefix);
+    const head = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) head[i] = bin.charCodeAt(i);
+    return checkMagic(head);
+  } catch { return false; }
 }
 
 // ── Registry helpers ──────────────────────────────────────
@@ -667,29 +679,30 @@ export async function onRequest({ request, env, params }) {
     } catch { return fail(request, 502); }
   }
 
-  // ── POST /api/upload — small files (≤ CHUNK_MAX_BYTES, single shot) ──
-  // Frontend sends small files (≤ 90 MB) directly here.
+  // ── POST /api/upload — small files (≤ CHUNK_THRESHOLD, single shot) ──
+  // Browser encodes to base64 and sends JSON { name, content }.
+  // Worker forwards the base64 string directly to GitHub — zero re-encoding.
   if (route === 'upload' && method === 'POST') {
-    if (!(request.headers.get('Content-Type')||'').includes('multipart/form-data')) return fail(request,400);
-    let fd; try { fd = await request.formData(); } catch { return fail(request,400); }
+    if (!(request.headers.get('Content-Type')||'').includes('application/json')) return fail(request,400);
+    let body; try { body = await request.json(); } catch { return fail(request,400); }
 
-    const blob    = fd.get('file');
-    const rawName = fd.get('name');
-    if (!blob||!rawName) return fail(request,400);
-    if (blob.size > CHUNK_MAX_BYTES) return fail(request,413);  // >12 MB must use upload-chunk
+    const { name: rawName, content: b64 } = body||{};
+    if (!rawName || !b64 || typeof b64 !== 'string') return fail(request,400);
+    if (b64.length > CHUNK_B64_MAX) return fail(request,413);
 
     const safe = sanitize(String(rawName));
     if (!safe) return fail(request,415);
+    if (!checkMagicBase64(b64)) return fail(request,415);
 
-    const buf = await blob.arrayBuffer();
-    if (!checkMagic(new Uint8Array(buf))) return fail(request,415);
+    // Estimate decoded byte size from base64 length
+    const decodedSize = Math.floor(b64.length * 3 / 4);
 
     try {
-      if (buf.byteLength > SMALL_MAX_BYTES) {
-        // Medium file (20–90 MB): use Git Blobs API to get it into a commit
-        const blobSha = await createBlob(sess, ab2b64(buf));
+      if (decodedSize > SMALL_MAX_BYTES) {
+        // > 5 MB: Git Blobs API (supports large files without Contents API 100MB JSON limit)
+        const blobSha = await createBlob(sess, b64);
         const { ghToken, ghOwner, ghRepo, ghBranch, folder } = sess;
-        const gh = ghH(ghToken);
+        const gh   = ghH(ghToken);
         const base = `https://api.github.com/repos/${ghOwner}/${ghRepo}`;
         const refRes = await fetch(`${base}/git/ref/heads/${ghBranch}`, { headers:gh });
         if (!refRes.ok) throw new Error('ref_fail');
@@ -710,42 +723,40 @@ export async function onRequest({ request, env, params }) {
           method:'PATCH', headers:gh, body: JSON.stringify({ sha:newCommit, force:false }),
         });
       } else {
-        await uploadSmall(sess, safe, ab2b64(buf));
+        // ≤ 5 MB: Contents API (simple PUT, one call)
+        await uploadSmall(sess, safe, b64);
       }
-      return jsonRes(request, { ok:true, name:safe, size:buf.byteLength });
+      return jsonRes(request, { ok:true, name:safe, size:decodedSize });
     } catch { return fail(request, 502); }
   }
 
-  // ── POST /api/upload-chunk — one slice of a large file ───
-  // Frontend sends each 90 MB chunk here. Server creates a git blob (no commit yet).
-  // Returns the blob SHA which the frontend collects and sends in /api/finalize-upload.
+  // ── POST /api/upload-chunk — one 10 MB slice of a large file ───
+  // Browser base64-encodes each slice and sends JSON { name, chunkIndex, totalChunks, content }.
+  // Worker forwards base64 directly to GitHub Git Blobs API — zero re-encoding.
   if (route === 'upload-chunk' && method === 'POST') {
-    if (!(request.headers.get('Content-Type')||'').includes('multipart/form-data')) return fail(request,400);
-    let fd; try { fd = await request.formData(); } catch { return fail(request,400); }
+    if (!(request.headers.get('Content-Type')||'').includes('application/json')) return fail(request,400);
+    let body; try { body = await request.json(); } catch { return fail(request,400); }
 
-    const blob        = fd.get('file');
-    const rawName     = fd.get('name');
-    const chunkIndex  = parseInt(fd.get('chunkIndex')||'0', 10);
-    const totalChunks = parseInt(fd.get('totalChunks')||'1', 10);
+    const { name: rawName, chunkIndex, totalChunks, content: b64 } = body||{};
+    if (!rawName || !b64 || typeof b64 !== 'string') return fail(request,400);
+    if (b64.length > CHUNK_B64_MAX) return fail(request,413);
 
-    if (!blob||!rawName) return fail(request,400);
-    if (blob.size > CHUNK_MAX_BYTES) return fail(request,413);
-    if (isNaN(chunkIndex)||chunkIndex<0) return fail(request,400);
-    if (isNaN(totalChunks)||totalChunks<1||totalChunks>MAX_TOTAL_CHUNKS) return fail(request,400);
+    const idx = parseInt(chunkIndex, 10);
+    const tot = parseInt(totalChunks, 10);
+    if (isNaN(idx)||idx<0) return fail(request,400);
+    if (isNaN(tot)||tot<1||tot>MAX_TOTAL_CHUNKS) return fail(request,400);
 
     const safe = sanitize(String(rawName));
     if (!safe) return fail(request,415);
 
-    // Scan magic bytes only on the first chunk (that's where the file header lives)
-    if (chunkIndex === 0) {
-      const head = new Uint8Array(await blob.slice(0, 16).arrayBuffer());
-      if (!checkMagic(head)) return fail(request,415);
-    }
+    // Magic bytes check only on first chunk
+    if (idx === 0 && !checkMagicBase64(b64)) return fail(request,415);
 
-    const buf = await blob.arrayBuffer();
+    const decodedSize = Math.floor(b64.length * 3 / 4);
+
     try {
-      const blobSha = await createBlob(sess, ab2b64(buf));
-      return jsonRes(request, { ok:true, blobSha, index: chunkIndex, size: buf.byteLength });
+      const blobSha = await createBlob(sess, b64);   // forward directly — no re-encoding
+      return jsonRes(request, { ok:true, blobSha, index: idx, size: decodedSize });
     } catch { return fail(request, 502); }
   }
 
