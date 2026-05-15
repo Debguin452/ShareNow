@@ -142,8 +142,27 @@ body {
 .queue-info { flex: 1; min-width: 0; }
 .queue-name { font-size: .82rem; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #111; }
 .queue-size { font-size: .71rem; color: #999; margin-top: 1px; }
-.queue-bar  { height: 2px; background: #e8e8ec; border-radius: 1px; margin-top: 5px; overflow: hidden; }
-.queue-fill { height: 100%; background: #1a1a1a; border-radius: 1px; transition: width .15s; width: 0; }
+.queue-bar  { height: 3px; background: #e8e8ec; border-radius: 2px; margin-top: 6px; overflow: hidden; }
+.queue-fill { height: 100%; background: #1a1a1a; border-radius: 2px; transition: width .2s ease; width: 0; }
+
+/* ── Skeleton-wave: fires whenever the bar is in "go" state ── */
+@keyframes skeletonWave {
+  0%   { background-position: -250% center; }
+  100% { background-position: 250% center; }
+}
+.queue-fill.wave {
+  background: linear-gradient(
+    90deg,
+    #1a1a1a 0%,
+    #383838 30%,
+    #5c5c5c 48%,
+    #383838 66%,
+    #1a1a1a 100%
+  );
+  background-size: 250% 100%;
+  animation: skeletonWave 1.6s ease-in-out infinite;
+}
+
 .queue-status      { font-size: .72rem; font-weight: 600; flex-shrink: 0; white-space: nowrap; }
 .queue-status.wait { color: #aaa; }
 .queue-status.go   { color: #1a1a1a; }
@@ -410,6 +429,23 @@ let SESSION_TOKEN = '';
 let loginLocked   = false;
 let uploadPending = []; // { file, status }
 let _signupData   = {};
+
+// ── Pre-slice cache ────────────────────────────────────────
+// file.slice() is a zero-cost pointer — never copies bytes into memory.
+// We cache the Blob references the instant files are selected so that
+// chunkedUpload() never needs to re-slice at upload time.
+const _sliceCache = new WeakMap(); // File → Blob[]
+
+function precacheSlices(file) {
+  if (file.size <= CHUNK_THRESHOLD) return; // single-shot, nothing to cache
+  if (_sliceCache.has(file)) return;        // already cached
+  const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
+  const slices = Array.from({ length: totalChunks }, (_, i) => {
+    const start = i * CHUNK_SIZE;
+    return file.slice(start, Math.min(start + CHUNK_SIZE, file.size));
+  });
+  _sliceCache.set(file, slices);
+}
 
 // ── Boot ──────────────────────────────────────────────────
 (async () => {
@@ -680,7 +716,10 @@ function onFilePicked(fileList) {
     if(f.size>MAX_FILE_SIZE){rejected.push(`"${f.name}" exceeds the 5 GB limit.`);continue;}
     const ext=f.name.split('.').pop()?.toLowerCase()||'';
     if(BLOCKED_EXTS.has(ext)){rejected.push(`"${f.name}" — file type not permitted.`);continue;}
-    if(!uploadPending.find(p=>p.file.name===f.name&&p.file.size===f.size)) uploadPending.push({file:f,status:'wait'});
+    if(!uploadPending.find(p=>p.file.name===f.name&&p.file.size===f.size)){
+      uploadPending.push({file:f,status:'wait'});
+      precacheSlices(f); // zero-cost: file.slice() is just a pointer, no data copied
+    }
   }
   if(rejected.length) toast(rejected[0],'error');
   renderQueue();
@@ -787,12 +826,14 @@ const UPLOAD_CONCURRENCY = 5; // parallel in-flight chunk requests
 async function chunkedUpload(file, idx) {
   const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
 
-  // ── Phase 1: encode every slice in parallel ───────────────────────
+  // ── Phase 1: get pre-cached slices (or slice now as fallback) ────────
   setQ(idx, 'go', 2);
-  const slices = Array.from({ length: totalChunks }, (_, i) => {
+  // precacheSlices() runs synchronously on file-pick, so these are ready instantly
+  const slices = _sliceCache.get(file) || Array.from({ length: totalChunks }, (_, i) => {
     const start = i * CHUNK_SIZE;
     return file.slice(start, Math.min(start + CHUNK_SIZE, file.size));
   });
+  if (!_sliceCache.has(file)) _sliceCache.set(file, slices); // cache for safety
 
   // Fire all FileReader encodes simultaneously — browser handles them natively
   const encoded = await Promise.all(slices.map(s => blobToBase64(s)));
@@ -806,7 +847,7 @@ async function chunkedUpload(file, idx) {
   const runWorker = async () => {
     while (indexQueue.length > 0) {
       const i = indexQueue.shift();
-      const result = await xhrChunkEncoded(
+      const result = await xhrChunkWithRetry(
         encoded[i], slices[i].size, file.name, i, totalChunks, idx
       );
       blobs[i] = { index: i, blobSha: result.blobSha, size: slices[i].size };
@@ -839,6 +880,31 @@ async function chunkedUpload(file, idx) {
   setQ(idx, 'go', 99);
 }
 
+// ── Per-chunk retry wrapper ────────────────────────────────
+// Retries up to CHUNK_MAX_RETRIES times with exponential backoff.
+// Only retries on transient errors (network, 502); session expiry is fatal.
+const CHUNK_MAX_RETRIES = 2;
+const CHUNK_BACKOFF_MS  = 800; // first backoff; doubles each attempt
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+async function xhrChunkWithRetry(b64, rawSize, name, chunkIndex, totalChunks, queueIdx) {
+  let lastErr;
+  for (let attempt = 0; attempt <= CHUNK_MAX_RETRIES; attempt++) {
+    if (attempt > 0) {
+      // Exponential backoff: 800ms, 1600ms …
+      await sleep(CHUNK_BACKOFF_MS * Math.pow(2, attempt - 1));
+    }
+    try {
+      return await xhrChunkEncoded(b64, rawSize, name, chunkIndex, totalChunks, queueIdx);
+    } catch (err) {
+      if (err.message === 'Session expired.') throw err; // fatal — no retry
+      lastErr = err;
+    }
+  }
+  throw lastErr; // all attempts exhausted
+}
+
 // Uploads a pre-encoded base64 string for one chunk.
 // Encoding already happened in Phase 1, so this is pure network I/O.
 async function xhrChunkEncoded(b64, rawSize, name, chunkIndex, totalChunks, queueIdx) {
@@ -864,9 +930,17 @@ async function xhrChunkEncoded(b64, rawSize, name, chunkIndex, totalChunks, queu
 // ── Queue helpers ─────────────────────────────────────────
 function setQ(i, status, pct) {
   uploadPending[i].status = status;
-  const st=document.getElementById(`qstat-${i}`), fill=document.getElementById(`qfill-${i}`);
-  if(st){st.className=`queue-status ${status}`;st.textContent=statusLabel(status);}
-  if(fill) fill.style.width=pct+'%';
+  const st   = document.getElementById(`qstat-${i}`);
+  const fill = document.getElementById(`qfill-${i}`);
+  if (st) { st.className = `queue-status ${status}`; st.textContent = statusLabel(status); }
+  if (fill) {
+    fill.style.width = pct + '%';
+    if (status === 'go') {
+      fill.classList.add('wave');
+    } else {
+      fill.classList.remove('wave');
+    }
+  }
 }
 function statusLabel(s){return{wait:'Ready',go:'Uploading…',ok:'Done',fail:'Failed'}[s]||s;}
 
