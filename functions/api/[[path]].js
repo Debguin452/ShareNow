@@ -23,9 +23,9 @@ const SESSION_TTL      = 8  * 60 * 60 * 1000;
 const RATE_WINDOW_MS   = 15 * 60 * 1000;
 const RATE_MAX_LOGIN   = 5;
 const RATE_MAX_SIGNUP  = 3;
-const CHUNK_MAX_BYTES  = 90 * 1024 * 1024;   // 90 MB per chunk (GitHub blob hard cap ~100 MB)
-const SMALL_MAX_BYTES  = 20 * 1024 * 1024;   // ≤ 20 MB → Contents API; above → Blobs API
-const MAX_TOTAL_CHUNKS = 111;                  // ~9.99 GB theoretical maximum
+const CHUNK_MAX_BYTES  = 12 * 1024 * 1024;   // 12 MB max per chunk upload (10 MB + headroom)
+const SMALL_MAX_BYTES  =  5 * 1024 * 1024;   // ≤ 5 MB → Contents API; above → Blobs API
+const MAX_TOTAL_CHUNKS = 512;                  // 512 × 10 MB = ~5 GB maximum
 const SHA_RE           = /^[0-9a-f]{40}$/i;
 const USERNAME_RE      = /^[a-zA-Z0-9_\-]{3,32}$/;
 const CLEAN_NAME_RE    = /^[a-zA-Z0-9][a-zA-Z0-9._\-()\s]{0,253}$/;
@@ -273,12 +273,7 @@ async function writeReg(path, content, msg, env, sha = null) {
 function userPath(username) { return `users/${username.toLowerCase()}.json`; }
 async function getUser(username, env) {
   if (!USERNAME_RE.test(username)) return null;
-  try {
-    return await readReg(userPath(username), env);
-  } catch (e) {
-    // Distinguish "user not found" (null) from registry errors (throw so caller can 500)
-    throw new Error('registry_error');
-  }
+  return readReg(userPath(username), env).catch(() => null);
 }
 
 // ── User GitHub helpers ───────────────────────────────────
@@ -537,8 +532,7 @@ export async function onRequest({ request, env, params }) {
     if (!USERNAME_RE.test(username)) return jsonRes(request,{error:'Username must be 3–32 chars: letters, numbers, hyphens, underscores'},400);
     if (password.length < 8) return jsonRes(request,{error:'Password must be at least 8 characters'},400);
 
-    let existingUser; try { existingUser = await getUser(username, env); } catch { return fail(request, 502); }
-    if (existingUser) return fail(request, 409);
+    if (await getUser(username, env)) return fail(request, 409);
 
     const repoCheck = await fetch(
       `https://api.github.com/repos/${ghOwner}/${ghRepo}`,
@@ -590,9 +584,7 @@ export async function onRequest({ request, env, params }) {
     const { username, password } = body||{};
     if (!username||!password) return fail(request, 400);
 
-    let rec; 
-    try { rec = await getUser(username, env); } 
-    catch { return fail(request, 502); }  // registry error → 502, not 401
+    const rec = await getUser(username, env);
     if (!rec) {
       await pbkdf2Hash(password, crypto.getRandomValues(new Uint8Array(16)));
       await new Promise(r=>setTimeout(r,100+Math.random()*200));
@@ -684,7 +676,7 @@ export async function onRequest({ request, env, params }) {
     const blob    = fd.get('file');
     const rawName = fd.get('name');
     if (!blob||!rawName) return fail(request,400);
-    if (blob.size > CHUNK_MAX_BYTES) return fail(request,413);
+    if (blob.size > CHUNK_MAX_BYTES) return fail(request,413);  // >12 MB must use upload-chunk
 
     const safe = sanitize(String(rawName));
     if (!safe) return fail(request,415);
