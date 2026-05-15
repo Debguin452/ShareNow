@@ -7,6 +7,7 @@
   content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://api.github.com; frame-ancestors 'none'; base-uri 'none';">
 <meta name="referrer" content="no-referrer">
 <title>StoreGit</title>
+<link rel="icon" href="storegit-logo.png" type="image/png">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { font-size: 16px; -webkit-text-size-adjust: 100%; }
@@ -14,23 +15,17 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Helvetica, Arial, sans-serif;
   background: #f4f4f6; color: #111; min-height: 100vh; line-height: 1.5;
 }
-
-/* ── Screens ── */
 .screen { display: none; min-height: 100vh; align-items: center; justify-content: center; padding: 1.5rem; flex-direction: column; }
 .screen.active { display: flex; }
-
-/* ── Auth card ── */
 .auth-card {
   background: #fff; border-radius: 14px; padding: 2.25rem 2rem; width: 100%; max-width: 380px;
   box-shadow: 0 1px 4px rgba(0,0,0,.06), 0 6px 24px rgba(0,0,0,.07);
 }
 .brand { text-align: center; margin-bottom: 2rem; }
-.brand-logo { display: inline-block; width: 44px; height: 44px; background: #1a1a1a; border-radius: 10px; margin-bottom: .65rem; }
-.brand-logo svg { width: 100%; height: 100%; display: block; }
+.brand-logo { display: inline-block; margin-bottom: .65rem; }
+.brand-logo img { width: 44px; height: 44px; display: block; image-rendering: auto; }
 .brand h1 { font-size: 1.25rem; font-weight: 700; letter-spacing: -.02em; margin-bottom: .2rem; }
 .brand p  { font-size: .82rem; color: #6b6b70; }
-
-/* ── Form ── */
 .field { margin-bottom: 1rem; }
 .field label { display: block; font-size: .78rem; font-weight: 600; color: #444; margin-bottom: .35rem; letter-spacing: .01em; }
 .field input {
@@ -42,8 +37,6 @@ body {
 .field input.mono { font-family: 'SF Mono', 'Fira Code', ui-monospace, monospace; font-size: .83rem; letter-spacing: .03em; }
 .field-hint { font-size: .73rem; color: #7a7a80; margin-top: .3rem; line-height: 1.4; }
 .field-hint a { color: #1a1a1a; font-weight: 600; text-decoration: underline; }
-
-/* ── Buttons ── */
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: .4rem;
   width: 100%; padding: .78rem 1.2rem; border: none; border-radius: 8px;
@@ -55,14 +48,10 @@ body {
 .btn-primary { background: #1a1a1a; color: #fff; }
 .btn-ghost   { background: #f0f0f2; color: #222; }
 .btn-sm      { width: auto; padding: .45rem .85rem; font-size: .78rem; border-radius: 6px; }
-
-/* ── Messages ── */
 .form-error  { font-size: .78rem; color: #c0392b; min-height: 1.1em; margin-bottom: .5rem; }
 .form-note   { font-size: .73rem; color: #7a7a80; text-align: center; margin-top: 1rem; }
 .form-note a { color: #1a1a1a; font-weight: 600; text-decoration: none; border-bottom: 1px solid #1a1a1a; }
 .lockout-msg { font-size: .78rem; color: #c07000; text-align: center; min-height: 1.1em; margin-bottom: .5rem; }
-
-/* ── Signup steps ── */
 .step-indicator { display: flex; gap: .4rem; justify-content: center; margin-bottom: 1.75rem; }
 .step-dot { width: 6px; height: 6px; border-radius: 50%; background: #e0e0e4; transition: background .2s, width .2s; }
 .step-dot.active { background: #1a1a1a; width: 18px; border-radius: 3px; }
@@ -95,19 +84,16 @@ body {
 .pw-strength-bar   { height: 3px; background: #e8e8ec; border-radius: 2px; overflow: hidden; margin-bottom: .25rem; }
 .pw-strength-fill  { height: 100%; border-radius: 2px; transition: width .2s, background .2s; width: 0; }
 .pw-strength-label { font-size: .71rem; color: #888; }
-
-/* ── App layout ── */
 #app-screen { display: none; flex-direction: column; min-height: 100vh; align-items: stretch; }
 #app-screen.active { display: flex; }
-
 .app-topbar {
   background: #fff; border-bottom: 1px solid #e8e8ec; padding: 0 1.25rem; height: 52px;
   display: flex; align-items: center; justify-content: space-between;
   position: sticky; top: 0; z-index: 20; gap: .5rem; min-width: 0;
 }
 .app-brand { display: flex; align-items: center; gap: .55rem; min-width: 0; flex: 1; overflow: hidden; }
-.app-brand-logo { width: 26px; height: 26px; background: #1a1a1a; border-radius: 6px; flex-shrink: 0; }
-.app-brand-logo svg { width: 100%; height: 100%; display: block; }
+.app-brand-logo { width: 26px; height: 26px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+.app-brand-logo img { width: 26px; height: 26px; display: block; image-rendering: auto; }
 .app-brand-text { min-width: 0; overflow: hidden; }
 .app-brand-text h1 { font-size: .9rem; font-weight: 700; letter-spacing: -.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .app-brand-text .repo-label { font-size: .68rem; color: #999; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -116,13 +102,10 @@ body {
 .btn-signout { width: 32px; height: 32px; border-radius: 7px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; background: #f0f0f2; color: #444; transition: background .12s; flex-shrink: 0; -webkit-tap-highlight-color: transparent; }
 .btn-signout:hover { background: #e4e4e8; }
 .btn-signout svg { width: 16px; height: 16px; stroke: currentColor; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
-
 .app-body { flex: 1; max-width: 680px; width: 100%; margin: 0 auto; padding: 1.25rem 1rem 5rem; }
 .card { background: #fff; border-radius: 12px; border: 1px solid #e8e8ec; padding: 1.1rem; margin-bottom: .85rem; }
 .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: .85rem; }
 .card-title  { font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: #888; }
-
-/* ── Drop zone ── */
 .drop-zone {
   border: 1.5px dashed #d0d0d6; border-radius: 10px; padding: 2rem 1rem;
   text-align: center; cursor: pointer; position: relative;
@@ -134,8 +117,6 @@ body {
 .drop-zone-icon svg { width: 100%; height: 100%; }
 .drop-zone-title { font-size: .88rem; font-weight: 600; margin-bottom: .2rem; color: #333; }
 .drop-zone-sub   { font-size: .76rem; color: #999; }
-
-/* ── Upload queue ── */
 .upload-queue { margin-top: .85rem; display: none; }
 .queue-item { display: flex; align-items: center; gap: .65rem; padding: .65rem .8rem; background: #f8f8fa; border-radius: 8px; margin-bottom: .4rem; }
 .queue-file-icon { width: 32px; height: 32px; background: #eee; border-radius: 6px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: .6rem; font-weight: 700; text-transform: uppercase; color: #666; letter-spacing: .03em; }
@@ -144,33 +125,21 @@ body {
 .queue-size { font-size: .71rem; color: #999; margin-top: 1px; }
 .queue-bar  { height: 3px; background: #e8e8ec; border-radius: 2px; margin-top: 6px; overflow: hidden; }
 .queue-fill { height: 100%; background: #1a1a1a; border-radius: 2px; transition: width .2s ease; width: 0; }
-
-/* ── Skeleton-wave: fires whenever the bar is in "go" state ── */
 @keyframes skeletonWave {
   0%   { background-position: -250% center; }
   100% { background-position: 250% center; }
 }
 .queue-fill.wave {
-  background: linear-gradient(
-    90deg,
-    #1a1a1a 0%,
-    #383838 30%,
-    #5c5c5c 48%,
-    #383838 66%,
-    #1a1a1a 100%
-  );
+  background: linear-gradient(90deg, #1a1a1a 0%, #383838 30%, #5c5c5c 48%, #383838 66%, #1a1a1a 100%);
   background-size: 250% 100%;
   animation: skeletonWave 1.6s ease-in-out infinite;
 }
-
 .queue-status      { font-size: .72rem; font-weight: 600; flex-shrink: 0; white-space: nowrap; }
 .queue-status.wait { color: #aaa; }
 .queue-status.go   { color: #1a1a1a; }
 .queue-status.ok   { color: #34a853; }
 .queue-status.fail { color: #c0392b; }
 .upload-actions { display: none; gap: .5rem; margin-top: .75rem; flex-wrap: wrap; }
-
-/* ── File list ── */
 .file-row { display: flex; align-items: center; gap: .7rem; padding: .8rem 0; border-bottom: 1px solid #f0f0f2; }
 .file-row:last-child { border-bottom: none; }
 .file-type-badge { width: 36px; height: 36px; background: #f0f0f2; border-radius: 7px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: .6rem; font-weight: 700; text-transform: uppercase; letter-spacing: .03em; color: #555; }
@@ -189,8 +158,6 @@ body {
 .empty-state-icon { width: 40px; height: 40px; margin: 0 auto .75rem; opacity: .3; }
 .empty-state-icon svg { width: 100%; height: 100%; }
 .empty-state p { font-size: .85rem; }
-
-/* ── Download progress ── */
 .dl-progress-bar {
   position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%);
   width: calc(100% - 2rem); max-width: 440px;
@@ -201,8 +168,6 @@ body {
 .dl-track { height: 4px; background: #e8e8ec; border-radius: 2px; overflow: hidden; }
 .dl-fill  { height: 100%; background: #1a1a1a; border-radius: 2px; transition: width .1s; width: 0; }
 .dl-label { font-size: .71rem; color: #999; margin-top: .35rem; }
-
-/* ── Toast ── */
 .toast {
   position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%) translateY(80px);
   padding: .6rem 1.1rem; border-radius: 20px; font-size: .82rem; font-weight: 500; color: #fff;
@@ -212,26 +177,122 @@ body {
 .toast.show  { transform: translateX(-50%) translateY(0); }
 .toast.ok    { background: #34a853; }
 .toast.error { background: #c0392b; }
-
 .app-footer { text-align: center; padding: 1.5rem; font-size: .72rem; color: #ccc; border-top: 1px solid #f0f0f2; margin-top: auto; }
 .spinner { width: 18px; height: 18px; border: 2px solid #e8e8ec; border-top-color: #1a1a1a; border-radius: 50%; animation: spin .6s linear infinite; display: inline-block; vertical-align: middle; }
 @keyframes spin { to { transform: rotate(360deg); } }
 .loading-row { display: flex; align-items: center; justify-content: center; gap: .6rem; padding: 2rem 0; color: #bbb; font-size: .85rem; }
+/* Logo: black on light, white on dark */
+.brand-logo img,
+.app-brand-logo img { filter: brightness(0); }
 
-/* ── Responsive ── */
+@media (prefers-color-scheme: dark) {
+  .brand-logo img,
+  .app-brand-logo img { filter: brightness(0) invert(1); }
+
+  body { background: #0d0d0f; color: #f0f0f0; }
+
+  .auth-card {
+    background: #1c1c1f;
+    box-shadow: 0 1px 4px rgba(0,0,0,.4), 0 6px 28px rgba(0,0,0,.5);
+  }
+  .brand p, .step-sub { color: #888; }
+  .step-title { color: #f0f0f0; }
+
+  .field label { color: #bbb; }
+  .field input { border-color: #3a3a3e; background: #28282c; color: #f0f0f0; }
+  .field input:focus { border-color: #f0f0f0; background: #323236; }
+  .field-hint { color: #777; }
+  .field-hint a { color: #e0e0e0; }
+
+  .btn-primary { background: #f0f0f0; color: #111; }
+  .btn-ghost   { background: #28282c; color: #ddd; }
+  .btn-ghost:hover { background: #323236; }
+
+  .form-error  { color: #ff6b6b; }
+  .form-note   { color: #888; }
+  .form-note a { color: #f0f0f0; border-bottom-color: #f0f0f0; }
+  .lockout-msg { color: #f0a040; }
+
+  .step-dot        { background: #3a3a3e; }
+  .step-dot.active { background: #f0f0f0; }
+  .step-dot.done   { background: #34a853; }
+
+  .verify-badge { background: #0f2218; border-color: #254d33; color: #5ecb7a; }
+
+  .link-row { background: #28282c; border-color: #3a3a3e; color: #ddd; }
+  .link-row:hover { background: #323236; }
+
+  .pw-strength-bar { background: #3a3a3e; }
+
+  .app-topbar { background: #1c1c1f; border-bottom-color: #2a2a2e; }
+  .user-chip  { background: #28282c; color: #bbb; }
+  .btn-signout { background: #28282c; color: #bbb; }
+  .btn-signout:hover { background: #323236; }
+  .repo-label { color: #777 !important; }
+
+  .card { background: #1c1c1f; border-color: #2a2a2e; }
+  .card-title { color: #777; }
+
+  .drop-zone { border-color: #3a3a3e; color: #888; }
+  .drop-zone.dragging { border-color: #f0f0f0; background: #28282c; }
+  .drop-zone-title { color: #ddd; }
+  .drop-zone-sub   { color: #666; }
+  .drop-zone-icon  { color: #888; opacity: .6; }
+
+  .queue-item { background: #28282c; }
+  .queue-name { color: #f0f0f0; }
+  .queue-size { color: #777; }
+  .queue-bar  { background: #3a3a3e; }
+  .queue-fill { background: #f0f0f0; }
+  .queue-fill.wave {
+    background: linear-gradient(90deg,#ccc 0%,#eee 30%,#fff 48%,#eee 66%,#ccc 100%);
+    background-size: 250% 100%;
+  }
+  .queue-status.wait { color: #555; }
+  .queue-status.go   { color: #f0f0f0; }
+
+  .file-row { border-bottom-color: #2a2a2e; }
+  .file-type-badge { background: #28282c; color: #aaa; }
+  .file-type-badge.chunked { background: #0f1d38; color: #6ea8fe; }
+  .file-name { color: #f0f0f0; }
+  .file-meta { color: #777; }
+  .file-meta .multi-badge { background: #28282c; color: #888; }
+  .btn-icon { background: #28282c; }
+  .btn-icon:hover { background: #323236; }
+  .btn-icon svg { stroke: #bbb; }
+  .btn-icon.danger:hover { background: #3a1a1a; }
+  .btn-icon.danger svg  { stroke: #ff6b6b; }
+  .empty-state { color: #555; }
+
+  .dl-progress-bar {
+    background: #1c1c1f; border-color: #2a2a2e;
+    box-shadow: 0 4px 20px rgba(0,0,0,.5);
+  }
+  .dl-filename { color: #f0f0f0; }
+  .dl-track { background: #3a3a3e; }
+  .dl-fill  { background: #f0f0f0; }
+  .dl-label { color: #777; }
+
+  .toast       { background: #f0f0f0; color: #111; }
+  .toast.ok    { background: #34a853; color: #fff; }
+  .toast.error { background: #c0392b; color: #fff; }
+
+  .app-footer { color: #555; border-top-color: #2a2a2e; }
+
+  .spinner { border-color: #3a3a3e; border-top-color: #f0f0f0; }
+  .loading-row { color: #666; }
+}
 @media (max-width: 380px) { .auth-card { padding: 1.6rem 1.1rem; } .app-body { padding: 1rem .75rem 4rem; } .user-chip { max-width: 72px; } .app-topbar { padding: 0 .85rem; } }
-@media (min-width: 640px) { .app-topbar { padding: 0 2rem; height: 56px; } .app-brand-logo { width: 28px; height: 28px; } .app-brand-text h1 { font-size: .95rem; } .user-chip { max-width: 160px; font-size: .78rem; } .btn-signout { width: 34px; height: 34px; } }
+@media (min-width: 640px) { .app-topbar { padding: 0 2rem; height: 56px; } .app-brand-logo { width: 28px; height: 28px; } .app-brand-logo img { width: 28px; height: 28px; } .app-brand-text h1 { font-size: .95rem; } .user-chip { max-width: 160px; font-size: .78rem; } .btn-signout { width: 34px; height: 34px; } }
 @media (min-width: 1024px) { .app-topbar { padding: 0 2.5rem; } .app-body { padding: 1.5rem 1rem 5rem; } }
 </style>
 </head>
 <body>
-
-<!-- LOGIN -->
 <div id="login-screen" class="screen">
   <div class="auth-card">
     <div class="brand">
       <div class="brand-logo">
-        <svg viewBox="0 0 44 44" fill="none"><rect width="44" height="44" rx="10" fill="#1a1a1a"/><path d="M12 22h20M22 12v20" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg>
+        <img src="storegit-logo.png" alt="StoreGit" width="44" height="44">
       </div>
       <h1>StoreGit</h1>
       <p>Sign in to your storage</p>
@@ -251,13 +312,11 @@ body {
     <div class="form-note">No account yet? <a href="#" onclick="showScreen('signup');return false;">Create one</a></div>
   </div>
 </div>
-
-<!-- SIGNUP -->
 <div id="signup-screen" class="screen">
   <div class="auth-card">
     <div class="brand">
       <div class="brand-logo">
-        <svg viewBox="0 0 44 44" fill="none"><rect width="44" height="44" rx="10" fill="#1a1a1a"/><path d="M12 22h20M22 12v20" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg>
+        <img src="storegit-logo.png" alt="StoreGit" width="44" height="44">
       </div>
       <h1>StoreGit</h1>
       <p>Create your personal storage</p>
@@ -267,7 +326,6 @@ body {
       <div class="step-dot" id="sdot-2"></div>
       <div class="step-dot" id="sdot-3"></div>
     </div>
-
     <div class="step active" id="step-1">
       <div class="step-title">Choose a username</div>
       <div class="step-sub">This is how you will sign in to StoreGit.</div>
@@ -293,7 +351,6 @@ body {
       <div class="form-error" id="step1-error"></div>
       <button class="btn btn-primary" onclick="step1Next()">Continue</button>
     </div>
-
     <div class="step" id="step-2">
       <div class="step-title">Connect your GitHub repository</div>
       <div class="step-sub">Your files will be stored in a repository you own.</div>
@@ -321,7 +378,6 @@ body {
       <button class="btn btn-primary" id="step2-btn" onclick="step2Next()">Verify &amp; Continue</button>
       <button class="btn btn-ghost" style="margin-top:.5rem" onclick="goToStep(1)">Back</button>
     </div>
-
     <div class="step" id="step-3">
       <div class="verify-badge">
         <div class="vb-icon"></div>
@@ -331,19 +387,16 @@ body {
       <div class="step-sub">Your account has been created. Sign in to start using your storage.</div>
       <button class="btn btn-primary" onclick="showScreen('login')">Go to Sign In</button>
     </div>
-
     <div class="form-note" id="signup-footer-note" style="margin-top:1rem">
       Already have an account? <a href="#" onclick="showScreen('login');return false;">Sign in</a>
     </div>
   </div>
 </div>
-
-<!-- APP -->
 <div id="app-screen">
   <div class="app-topbar">
     <div class="app-brand">
       <div class="app-brand-logo">
-        <svg viewBox="0 0 28 28" fill="none"><rect width="28" height="28" rx="6" fill="#1a1a1a"/><path d="M7 14h14M14 7v14" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+        <img src="storegit-logo.png" alt="StoreGit" width="26" height="26">
       </div>
       <div class="app-brand-text">
         <h1>StoreGit</h1>
@@ -357,7 +410,6 @@ body {
       </button>
     </div>
   </div>
-
   <div class="app-body">
     <div class="card">
       <div class="card-header">
@@ -368,8 +420,8 @@ body {
         <input type="file" id="file-input" multiple onchange="onFilePicked(this.files)">
         <div class="drop-zone-icon">
           <svg viewBox="0 0 36 36" fill="none">
-            <path d="M18 24V12M12 18l6-6 6 6" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M6 26c0 1.1.9 2 2 2h20a2 2 0 0 0 2-2v-2" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round"/>
+            <path d="M18 24V12M12 18l6-6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M6 26c0 1.1.9 2 2 2h20a2 2 0 0 0 2-2v-2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
           </svg>
         </div>
         <div class="drop-zone-title">Click to select files or drag them here</div>
@@ -380,7 +432,6 @@ body {
         <button class="btn btn-ghost btn-sm" onclick="clearQueue()">Clear</button>
       </div>
     </div>
-
     <div class="card">
       <div class="card-header">
         <div class="card-title">Files</div>
@@ -391,26 +442,17 @@ body {
   </div>
   <div class="app-footer">Created by Deb Guin &nbsp;&middot;&nbsp; StoreGit</div>
 </div>
-
 <div class="dl-progress-bar" id="dl-bar">
   <div class="dl-filename" id="dl-filename"></div>
   <div class="dl-track"><div class="dl-fill" id="dl-fill"></div></div>
   <div class="dl-label" id="dl-label">Preparing download…</div>
 </div>
-
 <div class="toast" id="toast"></div>
-
 <script>
 'use strict';
-
-// ── Limits ────────────────────────────────────────────────
-// Files above CHUNK_THRESHOLD are split into CHUNK_SIZE pieces and
-// uploaded via /api/upload-chunk + /api/finalize-upload.
-// Files at or below go through the single /api/upload endpoint.
-const CHUNK_THRESHOLD = 5  * 1024 * 1024;   // 5 MB — start chunking above this
-const CHUNK_SIZE      = 10 * 1024 * 1024;   // 10 MB per chunk → ~13 MB base64 JSON, never times out
-const MAX_FILE_SIZE   = 5  * 1024 * 1024 * 1024; // 5 GB total (512 chunks × 10 MB)
-
+const CHUNK_THRESHOLD = 5  * 1024 * 1024;
+const CHUNK_SIZE      = 10 * 1024 * 1024;
+const MAX_FILE_SIZE   = 5  * 1024 * 1024 * 1024;
 const BLOCKED_EXTS = new Set([
   'exe','bat','cmd','com','msi','ps1','psm1',
   'sh','bash','zsh','fish','command',
@@ -423,22 +465,14 @@ const BLOCKED_EXTS = new Set([
   'vbs','vbe','wsf','wsh','hta','jar','war','class',
   'scr','pif','reg','lnk','app','dmg','pkg','deb','rpm','apk',
 ]);
-
-// ── State ─────────────────────────────────────────────────
 let SESSION_TOKEN = '';
 let loginLocked   = false;
-let uploadPending = []; // { file, status }
+let uploadPending = [];
 let _signupData   = {};
-
-// ── Pre-slice cache ────────────────────────────────────────
-// file.slice() is a zero-cost pointer — never copies bytes into memory.
-// We cache the Blob references the instant files are selected so that
-// chunkedUpload() never needs to re-slice at upload time.
-const _sliceCache = new WeakMap(); // File → Blob[]
-
+const _sliceCache = new WeakMap();
 function precacheSlices(file) {
-  if (file.size <= CHUNK_THRESHOLD) return; // single-shot, nothing to cache
-  if (_sliceCache.has(file)) return;        // already cached
+  if (file.size <= CHUNK_THRESHOLD) return;
+  if (_sliceCache.has(file)) return;
   const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
   const slices = Array.from({ length: totalChunks }, (_, i) => {
     const start = i * CHUNK_SIZE;
@@ -446,8 +480,6 @@ function precacheSlices(file) {
   });
   _sliceCache.set(file, slices);
 }
-
-// ── Boot ──────────────────────────────────────────────────
 (async () => {
   try {
     const r = await fetch('/api/status');
@@ -461,7 +493,6 @@ function precacheSlices(file) {
       showScreen('login'); return;
     }
   } catch {}
-
   const saved = sessionStorage.getItem('sg_tok');
   if (saved) {
     SESSION_TOKEN = saved;
@@ -473,20 +504,15 @@ function precacheSlices(file) {
   }
   showScreen('login');
 })();
-
 function showScreen(name) {
   document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
   document.getElementById('app-screen').classList.remove('active');
   if (name === 'app') document.getElementById('app-screen').classList.add('active');
   else { const el = document.getElementById(`${name}-screen`); if (el) el.classList.add('active'); }
 }
-
 const H = () => ({ 'X-Session-Token': SESSION_TOKEN });
-
-// ── Login ─────────────────────────────────────────────────
 document.getElementById('login-username').addEventListener('keydown', e => { if (e.key==='Enter') document.getElementById('login-password').focus(); });
 document.getElementById('login-password').addEventListener('keydown', e => { if (e.key==='Enter') doLogin(); });
-
 async function doLogin() {
   if (loginLocked) return;
   const username = document.getElementById('login-username').value.trim();
@@ -517,7 +543,6 @@ async function doLogin() {
   } catch { errEl.textContent = 'Connection error. Please try again.'; }
   btn.disabled = false; btn.textContent = 'Sign In';
 }
-
 function startLockout(secs) {
   loginLocked = true;
   const btn = document.getElementById('login-btn');
@@ -530,7 +555,6 @@ function startLockout(secs) {
   };
   tick(); const t = setInterval(tick, 1000);
 }
-
 function bootApp(me) {
   const chip = document.getElementById('user-chip');
   chip.textContent = me.display || me.username;
@@ -549,8 +573,6 @@ async function doLogout() {
   SESSION_TOKEN=''; sessionStorage.removeItem('sg_tok');
   uploadPending=[]; clearQueue(); showScreen('login');
 }
-
-// ── Signup ────────────────────────────────────────────────
 function goToStep(n) {
   [1,2,3].forEach(i => {
     document.getElementById(`step-${i}`).classList.toggle('active', i===n);
@@ -601,8 +623,6 @@ async function step2Next() {
   } catch{err.textContent='Connection error. Please try again.';}
   finally{btn.disabled=false;btn.textContent='Verify & Continue';}
 }
-
-// ── File list ─────────────────────────────────────────────
 async function loadFiles() {
   const el=document.getElementById('file-list');
   el.innerHTML='<div class="loading-row"><span class="spinner"></span> Loading files…</div>';
@@ -613,30 +633,24 @@ async function loadFiles() {
     renderFiles(await r.json());
   } catch(e){el.innerHTML='';el.appendChild(emptyState(e.message));}
 }
-
 function renderFiles(files) {
   const el=document.getElementById('file-list');
   el.innerHTML='';
-  // Filter out .storegit marker
   const visible=files.filter(f=>f.name!=='.storegit');
   if(!visible.length){el.appendChild(emptyState('No files uploaded yet.'));return;}
-
   for(const f of visible){
     const row   = elem('div','file-row');
     const badge = elem('div', f.chunked ? 'file-type-badge chunked' : 'file-type-badge');
     badge.textContent = fileExt(f.name);
-
     const info = elem('div','file-info');
     const nm   = elem('div','file-name'); nm.textContent=f.name; nm.title=f.name;
     const mt   = elem('div','file-meta'); mt.textContent=fmtSize(f.size);
-    // Show a subtle "X parts" badge for chunked files
     if(f.chunked && f.parts > 1){
       const sp = document.createElement('span');
       sp.className='multi-badge'; sp.textContent=`${f.parts} parts`;
       mt.appendChild(sp);
     }
     info.append(nm,mt);
-
     const actions = elem('div','file-actions');
     const dlBtn = elem('button','btn-icon');
     dlBtn.title='Download';
@@ -651,7 +665,6 @@ function renderFiles(files) {
     el.appendChild(row);
   }
 }
-
 async function deleteFile(name, sha, chunked, rowEl) {
   const msg = chunked
     ? `Permanently delete "${name}"?\n\nThis file has multiple parts. All parts will be removed. This cannot be undone.`
@@ -666,8 +679,6 @@ async function deleteFile(name, sha, chunked, rowEl) {
     else toast('Delete failed.','error');
   } catch{toast('Delete failed.','error');}
 }
-
-// ── Download ──────────────────────────────────────────────
 async function downloadFile(name, size) {
   const bar=document.getElementById('dl-bar'), fill=document.getElementById('dl-fill'),
         lbl=document.getElementById('dl-label'), fnEl=document.getElementById('dl-filename');
@@ -696,20 +707,16 @@ async function downloadFile(name, size) {
     toast('Saved to Downloads.','ok');
   } catch{ document.getElementById('dl-bar').style.display='none'; toast('Download failed.','error'); }
 }
-
 function triggerSave(blob, filename) {
   const url=URL.createObjectURL(blob), a=document.createElement('a');
   a.href=url; a.download=filename; a.style.display='none';
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
   setTimeout(()=>URL.revokeObjectURL(url),60000);
 }
-
-// ── Upload ────────────────────────────────────────────────
 const dropZone=document.getElementById('drop-zone');
 dropZone.addEventListener('dragover',e=>{e.preventDefault();dropZone.classList.add('dragging');});
 dropZone.addEventListener('dragleave',()=>dropZone.classList.remove('dragging'));
 dropZone.addEventListener('drop',e=>{e.preventDefault();dropZone.classList.remove('dragging');onFilePicked(e.dataTransfer.files);});
-
 function onFilePicked(fileList) {
   const rejected=[];
   for(const f of fileList){
@@ -718,13 +725,12 @@ function onFilePicked(fileList) {
     if(BLOCKED_EXTS.has(ext)){rejected.push(`"${f.name}" — file type not permitted.`);continue;}
     if(!uploadPending.find(p=>p.file.name===f.name&&p.file.size===f.size)){
       uploadPending.push({file:f,status:'wait'});
-      precacheSlices(f); // zero-cost: file.slice() is just a pointer, no data copied
+      precacheSlices(f);
     }
   }
   if(rejected.length) toast(rejected[0],'error');
   renderQueue();
 }
-
 function renderQueue() {
   const qEl=document.getElementById('upload-queue'), aEl=document.getElementById('upload-actions');
   if(!uploadPending.length){qEl.style.display='none';aEl.style.display='none';return;}
@@ -734,7 +740,6 @@ function renderQueue() {
     const badge=elem('div','queue-file-icon'); badge.textContent=fileExt(it.file.name);
     const info=elem('div','queue-info');
     const nm=elem('div','queue-name'); nm.textContent=it.file.name;
-    // Show chunk count hint for large files
     const isLarge=it.file.size>CHUNK_THRESHOLD;
     const nChunks=isLarge?Math.ceil(it.file.size/CHUNK_SIZE):0;
     const sz=elem('div','queue-size');
@@ -746,13 +751,11 @@ function renderQueue() {
     item.append(badge,info,st); qEl.appendChild(item);
   });
 }
-
 function clearQueue(){
   uploadPending=[];
   document.getElementById('file-input').value='';
   renderQueue();
 }
-
 async function startUpload() {
   if(!uploadPending.length) return;
   const btn=document.getElementById('upload-btn');
@@ -775,9 +778,6 @@ async function startUpload() {
   else toast(`${failed} file${failed>1?'s':''} failed.`,'error');
   loadFiles();
 }
-
-// ── Base64 helper — browser encodes, Worker forwards as-is ───────────
-// FileReader.readAsDataURL is a browser built-in, uses no JS CPU budget.
 function blobToBase64(blob) {
   return new Promise((res, rej) => {
     const r = new FileReader();
@@ -786,12 +786,9 @@ function blobToBase64(blob) {
     r.readAsDataURL(blob);
   });
 }
-
-// ── Single-shot upload (files ≤ CHUNK_THRESHOLD = 5 MB) ──────────────
-// Browser base64-encodes, sends JSON. Worker forwards straight to GitHub.
 async function xhrUpload(file, idx) {
   setQ(idx, 'go', 5);
-  const b64 = await blobToBase64(file);   // native browser encoding, ~0 ms CPU
+  const b64 = await blobToBase64(file);
   setQ(idx, 'go', 30);
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
@@ -813,37 +810,20 @@ async function xhrUpload(file, idx) {
     xhr.send(JSON.stringify({ name: file.name, content: b64 }));
   });
 }
-
-// ── Chunked upload (files > CHUNK_THRESHOLD = 5 MB) ──────────────────
-// Phase 1: ALL slices are base64-encoded in parallel by the browser
-//          (FileReader is native C++, runs off the JS thread — essentially free).
-// Phase 2: Encoded chunks are uploaded with a concurrency cap of UPLOAD_CONCURRENCY
-//          so 3 requests fly to the Worker at the same time, saturating the pipe
-//          on mobile and desktop alike.
-// Phase 3: /api/finalize-upload stitches the blob SHAs into a Git tree.
-const UPLOAD_CONCURRENCY = 5; // parallel in-flight chunk requests
-
+const UPLOAD_CONCURRENCY = 5;
 async function chunkedUpload(file, idx) {
   const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
-
-  // ── Phase 1: get pre-cached slices (or slice now as fallback) ────────
   setQ(idx, 'go', 2);
-  // precacheSlices() runs synchronously on file-pick, so these are ready instantly
   const slices = _sliceCache.get(file) || Array.from({ length: totalChunks }, (_, i) => {
     const start = i * CHUNK_SIZE;
     return file.slice(start, Math.min(start + CHUNK_SIZE, file.size));
   });
-  if (!_sliceCache.has(file)) _sliceCache.set(file, slices); // cache for safety
-
-  // Fire all FileReader encodes simultaneously — browser handles them natively
+  if (!_sliceCache.has(file)) _sliceCache.set(file, slices);
   const encoded = await Promise.all(slices.map(s => blobToBase64(s)));
-  setQ(idx, 'go', 18); // encoding done, now upload
-
-  // ── Phase 2: upload with bounded concurrency ──────────────────────
+  setQ(idx, 'go', 18);
   const blobs      = new Array(totalChunks);
   let  doneCount   = 0;
   const indexQueue = Array.from({ length: totalChunks }, (_, i) => i);
-
   const runWorker = async () => {
     while (indexQueue.length > 0) {
       const i = indexQueue.shift();
@@ -852,17 +832,12 @@ async function chunkedUpload(file, idx) {
       );
       blobs[i] = { index: i, blobSha: result.blobSha, size: slices[i].size };
       doneCount++;
-      // Progress: 18 % encoding done → 92 % uploads done
       setQ(idx, 'go', 18 + Math.round((doneCount / totalChunks) * 74));
     }
   };
-
-  // Spawn up to UPLOAD_CONCURRENCY parallel workers
   await Promise.all(
     Array.from({ length: Math.min(UPLOAD_CONCURRENCY, totalChunks) }, runWorker)
   );
-
-  // ── Phase 3: finalize ─────────────────────────────────────────────
   setQ(idx, 'go', 93);
   const fr = await fetch('/api/finalize-upload', {
     method: 'POST', credentials: 'same-origin',
@@ -879,34 +854,24 @@ async function chunkedUpload(file, idx) {
   }
   setQ(idx, 'go', 99);
 }
-
-// ── Per-chunk retry wrapper ────────────────────────────────
-// Retries up to CHUNK_MAX_RETRIES times with exponential backoff.
-// Only retries on transient errors (network, 502); session expiry is fatal.
 const CHUNK_MAX_RETRIES = 2;
-const CHUNK_BACKOFF_MS  = 800; // first backoff; doubles each attempt
-
+const CHUNK_BACKOFF_MS  = 800;
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
-
 async function xhrChunkWithRetry(b64, rawSize, name, chunkIndex, totalChunks, queueIdx) {
   let lastErr;
   for (let attempt = 0; attempt <= CHUNK_MAX_RETRIES; attempt++) {
     if (attempt > 0) {
-      // Exponential backoff: 800ms, 1600ms …
       await sleep(CHUNK_BACKOFF_MS * Math.pow(2, attempt - 1));
     }
     try {
       return await xhrChunkEncoded(b64, rawSize, name, chunkIndex, totalChunks, queueIdx);
     } catch (err) {
-      if (err.message === 'Session expired.') throw err; // fatal — no retry
+      if (err.message === 'Session expired.') throw err;
       lastErr = err;
     }
   }
-  throw lastErr; // all attempts exhausted
+  throw lastErr;
 }
-
-// Uploads a pre-encoded base64 string for one chunk.
-// Encoding already happened in Phase 1, so this is pure network I/O.
 async function xhrChunkEncoded(b64, rawSize, name, chunkIndex, totalChunks, queueIdx) {
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
@@ -926,8 +891,6 @@ async function xhrChunkEncoded(b64, rawSize, name, chunkIndex, totalChunks, queu
     xhr.send(JSON.stringify({ name, chunkIndex, totalChunks, content: b64 }));
   });
 }
-
-// ── Queue helpers ─────────────────────────────────────────
 function setQ(i, status, pct) {
   uploadPending[i].status = status;
   const st   = document.getElementById(`qstat-${i}`);
@@ -935,16 +898,10 @@ function setQ(i, status, pct) {
   if (st) { st.className = `queue-status ${status}`; st.textContent = statusLabel(status); }
   if (fill) {
     fill.style.width = pct + '%';
-    if (status === 'go') {
-      fill.classList.add('wave');
-    } else {
-      fill.classList.remove('wave');
-    }
+    if (status === 'go') { fill.classList.add('wave'); } else { fill.classList.remove('wave'); }
   }
 }
 function statusLabel(s){return{wait:'Ready',go:'Uploading…',ok:'Done',fail:'Failed'}[s]||s;}
-
-// ── Utilities ─────────────────────────────────────────────
 function fmtSize(b){
   if(b==null||isNaN(b))return'—';
   if(b<1024)return`${b} B`;
