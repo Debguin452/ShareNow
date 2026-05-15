@@ -273,7 +273,12 @@ async function writeReg(path, content, msg, env, sha = null) {
 function userPath(username) { return `users/${username.toLowerCase()}.json`; }
 async function getUser(username, env) {
   if (!USERNAME_RE.test(username)) return null;
-  return readReg(userPath(username), env).catch(() => null);
+  try {
+    return await readReg(userPath(username), env);
+  } catch (e) {
+    // Distinguish "user not found" (null) from registry errors (throw so caller can 500)
+    throw new Error('registry_error');
+  }
 }
 
 // ── User GitHub helpers ───────────────────────────────────
@@ -532,7 +537,8 @@ export async function onRequest({ request, env, params }) {
     if (!USERNAME_RE.test(username)) return jsonRes(request,{error:'Username must be 3–32 chars: letters, numbers, hyphens, underscores'},400);
     if (password.length < 8) return jsonRes(request,{error:'Password must be at least 8 characters'},400);
 
-    if (await getUser(username, env)) return fail(request, 409);
+    let existingUser; try { existingUser = await getUser(username, env); } catch { return fail(request, 502); }
+    if (existingUser) return fail(request, 409);
 
     const repoCheck = await fetch(
       `https://api.github.com/repos/${ghOwner}/${ghRepo}`,
@@ -584,7 +590,9 @@ export async function onRequest({ request, env, params }) {
     const { username, password } = body||{};
     if (!username||!password) return fail(request, 400);
 
-    const rec = await getUser(username, env);
+    let rec; 
+    try { rec = await getUser(username, env); } 
+    catch { return fail(request, 502); }  // registry error → 502, not 401
     if (!rec) {
       await pbkdf2Hash(password, crypto.getRandomValues(new Uint8Array(16)));
       await new Promise(r=>setTimeout(r,100+Math.random()*200));
