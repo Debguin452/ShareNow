@@ -8,64 +8,38 @@
 <meta name="referrer" content="no-referrer">
 <title>StoreGit</title>
 <style>
-/* ── Reset & base ── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { font-size: 16px; -webkit-text-size-adjust: 100%; }
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Helvetica, Arial, sans-serif;
-  background: #f4f4f6;
-  color: #111;
-  min-height: 100vh;
-  line-height: 1.5;
+  background: #f4f4f6; color: #111; min-height: 100vh; line-height: 1.5;
 }
 
-/* ── Screen containers ── */
-.screen {
-  display: none;
-  min-height: 100vh;
-  align-items: center;
-  justify-content: center;
-  padding: 1.5rem;
-  flex-direction: column;
-}
+/* ── Screens ── */
+.screen { display: none; min-height: 100vh; align-items: center; justify-content: center; padding: 1.5rem; flex-direction: column; }
 .screen.active { display: flex; }
 
 /* ── Auth card ── */
 .auth-card {
-  background: #fff;
-  border-radius: 14px;
-  padding: 2.25rem 2rem;
-  width: 100%;
-  max-width: 380px;
+  background: #fff; border-radius: 14px; padding: 2.25rem 2rem; width: 100%; max-width: 380px;
   box-shadow: 0 1px 4px rgba(0,0,0,.06), 0 6px 24px rgba(0,0,0,.07);
 }
-
 .brand { text-align: center; margin-bottom: 2rem; }
-.brand-logo {
-  display: inline-block;
-  width: 44px; height: 44px;
-  background: #1a1a1a;
-  border-radius: 10px;
-  margin-bottom: .65rem;
-}
+.brand-logo { display: inline-block; width: 44px; height: 44px; background: #1a1a1a; border-radius: 10px; margin-bottom: .65rem; }
 .brand-logo svg { width: 100%; height: 100%; display: block; }
 .brand h1 { font-size: 1.25rem; font-weight: 700; letter-spacing: -.02em; margin-bottom: .2rem; }
 .brand p  { font-size: .82rem; color: #6b6b70; }
 
-/* ── Form elements ── */
+/* ── Form ── */
 .field { margin-bottom: 1rem; }
-.field label {
-  display: block; font-size: .78rem; font-weight: 600;
-  color: #444; margin-bottom: .35rem; letter-spacing: .01em;
-}
+.field label { display: block; font-size: .78rem; font-weight: 600; color: #444; margin-bottom: .35rem; letter-spacing: .01em; }
 .field input {
-  width: 100%; padding: .72rem .9rem;
-  border: 1.5px solid #e2e2e6; border-radius: 8px;
+  width: 100%; padding: .72rem .9rem; border: 1.5px solid #e2e2e6; border-radius: 8px;
   font-size: .92rem; font-family: inherit; background: #fafafa; color: #111;
   outline: none; transition: border-color .15s, background .15s; -webkit-appearance: none;
 }
 .field input:focus { border-color: #1a1a1a; background: #fff; }
-.field input.mono  { font-family: 'SF Mono', 'Fira Code', ui-monospace, monospace; font-size: .83rem; letter-spacing: .03em; }
+.field input.mono { font-family: 'SF Mono', 'Fira Code', ui-monospace, monospace; font-size: .83rem; letter-spacing: .03em; }
 .field-hint { font-size: .73rem; color: #7a7a80; margin-top: .3rem; line-height: 1.4; }
 .field-hint a { color: #1a1a1a; font-weight: 600; text-decoration: underline; }
 
@@ -74,9 +48,9 @@ body {
   display: inline-flex; align-items: center; justify-content: center; gap: .4rem;
   width: 100%; padding: .78rem 1.2rem; border: none; border-radius: 8px;
   font-family: inherit; font-size: .9rem; font-weight: 600; cursor: pointer;
-  transition: opacity .15s, background .15s; -webkit-tap-highlight-color: transparent;
+  transition: opacity .15s; -webkit-tap-highlight-color: transparent;
 }
-.btn:active   { opacity: .75; }
+.btn:active { opacity: .75; }
 .btn:disabled { opacity: .45; cursor: default; }
 .btn-primary { background: #1a1a1a; color: #fff; }
 .btn-ghost   { background: #f0f0f2; color: #222; }
@@ -90,156 +64,60 @@ body {
 
 /* ── Signup steps ── */
 .step-indicator { display: flex; gap: .4rem; justify-content: center; margin-bottom: 1.75rem; }
-.step-dot {
-  width: 6px; height: 6px; border-radius: 50%; background: #e0e0e4;
-  transition: background .2s, width .2s;
-}
+.step-dot { width: 6px; height: 6px; border-radius: 50%; background: #e0e0e4; transition: background .2s, width .2s; }
 .step-dot.active { background: #1a1a1a; width: 18px; border-radius: 3px; }
 .step-dot.done   { background: #34a853; }
-.step            { display: none; }
-.step.active     { display: block; }
+.step { display: none; }
+.step.active { display: block; }
 .step-title { font-size: 1rem; font-weight: 700; margin-bottom: .25rem; letter-spacing: -.01em; }
 .step-sub   { font-size: .8rem; color: #6b6b70; margin-bottom: 1.4rem; }
-
 .verify-badge {
-  display: flex; align-items: center; gap: .6rem;
-  padding: .7rem .9rem; background: #f0faf4; border: 1px solid #c3e6cd;
-  border-radius: 8px; font-size: .82rem; color: #1e7e34; margin-bottom: 1rem;
+  display: flex; align-items: center; gap: .6rem; padding: .7rem .9rem;
+  background: #f0faf4; border: 1px solid #c3e6cd; border-radius: 8px;
+  font-size: .82rem; color: #1e7e34; margin-bottom: 1rem;
 }
 .verify-badge .vb-icon {
-  width: 16px; height: 16px; background: #34a853; border-radius: 50%;
-  flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+  width: 16px; height: 16px; background: #34a853; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
 }
 .verify-badge .vb-icon::after {
   content: ''; width: 5px; height: 3px;
   border-left: 1.5px solid #fff; border-bottom: 1.5px solid #fff;
   transform: rotate(-45deg) translateY(-1px);
 }
-
-/* ── Link row ── */
 .link-row {
   display: flex; align-items: center; gap: .5rem; padding: .7rem .9rem;
   background: #f4f4f6; border-radius: 8px; font-size: .82rem; color: #333;
-  margin-bottom: .7rem; text-decoration: none; border: 1px solid #e2e2e6;
-  transition: background .1s;
+  margin-bottom: .7rem; text-decoration: none; border: 1px solid #e2e2e6; transition: background .1s;
 }
 .link-row:hover { background: #ebebef; }
-
-/* ── Password strength ── */
-.pw-strength        { margin-top: .4rem; display: none; }
-.pw-strength-bar    { height: 3px; background: #e8e8ec; border-radius: 2px; overflow: hidden; margin-bottom: .25rem; }
-.pw-strength-fill   { height: 100%; border-radius: 2px; transition: width .2s, background .2s; width: 0; }
-.pw-strength-label  { font-size: .71rem; color: #888; }
+.pw-strength { margin-top: .4rem; display: none; }
+.pw-strength-bar   { height: 3px; background: #e8e8ec; border-radius: 2px; overflow: hidden; margin-bottom: .25rem; }
+.pw-strength-fill  { height: 100%; border-radius: 2px; transition: width .2s, background .2s; width: 0; }
+.pw-strength-label { font-size: .71rem; color: #888; }
 
 /* ── App layout ── */
 #app-screen { display: none; flex-direction: column; min-height: 100vh; align-items: stretch; }
 #app-screen.active { display: flex; }
 
-/* ── Top bar — responsive ── */
 .app-topbar {
-  background: #fff;
-  border-bottom: 1px solid #e8e8ec;
-  padding: 0 1.25rem;
-  height: 52px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  position: sticky;
-  top: 0;
-  z-index: 20;
-  gap: .5rem;
-  min-width: 0;
+  background: #fff; border-bottom: 1px solid #e8e8ec; padding: 0 1.25rem; height: 52px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 20; gap: .5rem; min-width: 0;
 }
-
-.app-brand {
-  display: flex;
-  align-items: center;
-  gap: .55rem;
-  min-width: 0;
-  flex: 1;
-  overflow: hidden;
-}
-.app-brand-logo {
-  width: 26px; height: 26px;
-  background: #1a1a1a;
-  border-radius: 6px;
-  flex-shrink: 0;
-}
+.app-brand { display: flex; align-items: center; gap: .55rem; min-width: 0; flex: 1; overflow: hidden; }
+.app-brand-logo { width: 26px; height: 26px; background: #1a1a1a; border-radius: 6px; flex-shrink: 0; }
 .app-brand-logo svg { width: 100%; height: 100%; display: block; }
-
-.app-brand-text {
-  min-width: 0;
-  overflow: hidden;
-}
-.app-brand-text h1 {
-  font-size: .9rem;
-  font-weight: 700;
-  letter-spacing: -.01em;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.app-brand-text .repo-label {
-  font-size: .68rem;
-  color: #999;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  line-height: 1.2;
-}
-
-.topbar-right {
-  display: flex;
-  align-items: center;
-  gap: .4rem;
-  flex-shrink: 0;
-}
-.user-chip {
-  font-size: .75rem;
-  color: #555;
-  padding: .28rem .6rem;
-  background: #f0f0f2;
-  border-radius: 20px;
-  font-weight: 500;
-  max-width: 100px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* Sign-out icon button */
-.btn-signout {
-  width: 32px; height: 32px;
-  border-radius: 7px;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #f0f0f2;
-  color: #444;
-  transition: background .12s;
-  flex-shrink: 0;
-  -webkit-tap-highlight-color: transparent;
-}
+.app-brand-text { min-width: 0; overflow: hidden; }
+.app-brand-text h1 { font-size: .9rem; font-weight: 700; letter-spacing: -.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.app-brand-text .repo-label { font-size: .68rem; color: #999; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.topbar-right { display: flex; align-items: center; gap: .4rem; flex-shrink: 0; }
+.user-chip { font-size: .75rem; color: #555; padding: .28rem .6rem; background: #f0f0f2; border-radius: 20px; font-weight: 500; max-width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.btn-signout { width: 32px; height: 32px; border-radius: 7px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; background: #f0f0f2; color: #444; transition: background .12s; flex-shrink: 0; -webkit-tap-highlight-color: transparent; }
 .btn-signout:hover { background: #e4e4e8; }
-.btn-signout:active { opacity: .7; }
-.btn-signout svg {
-  width: 16px; height: 16px;
-  stroke: currentColor; stroke-width: 2;
-  fill: none; stroke-linecap: round; stroke-linejoin: round;
-}
+.btn-signout svg { width: 16px; height: 16px; stroke: currentColor; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
 
-/* ── App body ── */
-.app-body {
-  flex: 1;
-  max-width: 680px;
-  width: 100%;
-  margin: 0 auto;
-  padding: 1.25rem 1rem 5rem;
-}
-
-/* ── Cards ── */
+.app-body { flex: 1; max-width: 680px; width: 100%; margin: 0 auto; padding: 1.25rem 1rem 5rem; }
 .card { background: #fff; border-radius: 12px; border: 1px solid #e8e8ec; padding: 1.1rem; margin-bottom: .85rem; }
 .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: .85rem; }
 .card-title  { font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: #888; }
@@ -259,60 +137,39 @@ body {
 
 /* ── Upload queue ── */
 .upload-queue { margin-top: .85rem; display: none; }
-.queue-item {
-  display: flex; align-items: center; gap: .65rem;
-  padding: .65rem .8rem; background: #f8f8fa; border-radius: 8px; margin-bottom: .4rem;
-}
-.queue-file-icon {
-  width: 32px; height: 32px; background: #eee; border-radius: 6px; flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center;
-  font-size: .65rem; font-weight: 700; text-transform: uppercase; color: #666;
-  letter-spacing: .03em; overflow: hidden;
-}
+.queue-item { display: flex; align-items: center; gap: .65rem; padding: .65rem .8rem; background: #f8f8fa; border-radius: 8px; margin-bottom: .4rem; }
+.queue-file-icon { width: 32px; height: 32px; background: #eee; border-radius: 6px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: .6rem; font-weight: 700; text-transform: uppercase; color: #666; letter-spacing: .03em; }
 .queue-info { flex: 1; min-width: 0; }
 .queue-name { font-size: .82rem; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #111; }
 .queue-size { font-size: .71rem; color: #999; margin-top: 1px; }
 .queue-bar  { height: 2px; background: #e8e8ec; border-radius: 1px; margin-top: 5px; overflow: hidden; }
 .queue-fill { height: 100%; background: #1a1a1a; border-radius: 1px; transition: width .15s; width: 0; }
-.queue-status       { font-size: .72rem; font-weight: 600; flex-shrink: 0; white-space: nowrap; }
-.queue-status.wait  { color: #aaa; }
-.queue-status.go    { color: #1a1a1a; }
-.queue-status.ok    { color: #34a853; }
-.queue-status.fail  { color: #c0392b; }
+.queue-status      { font-size: .72rem; font-weight: 600; flex-shrink: 0; white-space: nowrap; }
+.queue-status.wait { color: #aaa; }
+.queue-status.go   { color: #1a1a1a; }
+.queue-status.ok   { color: #34a853; }
+.queue-status.fail { color: #c0392b; }
 .upload-actions { display: none; gap: .5rem; margin-top: .75rem; flex-wrap: wrap; }
 
 /* ── File list ── */
-.file-row {
-  display: flex; align-items: center; gap: .7rem;
-  padding: .8rem 0; border-bottom: 1px solid #f0f0f2;
-}
+.file-row { display: flex; align-items: center; gap: .7rem; padding: .8rem 0; border-bottom: 1px solid #f0f0f2; }
 .file-row:last-child { border-bottom: none; }
-.file-type-badge {
-  width: 36px; height: 36px; background: #f0f0f2; border-radius: 7px; flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center;
-  font-size: .6rem; font-weight: 700; text-transform: uppercase; letter-spacing: .03em; color: #555;
-}
+.file-type-badge { width: 36px; height: 36px; background: #f0f0f2; border-radius: 7px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: .6rem; font-weight: 700; text-transform: uppercase; letter-spacing: .03em; color: #555; }
+.file-type-badge.chunked { background: #e8f0fe; color: #1a73e8; }
 .file-info { flex: 1; min-width: 0; }
 .file-name { font-size: .88rem; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #111; }
 .file-meta { font-size: .73rem; color: #999; margin-top: 1px; }
+.file-meta .multi-badge { background: #f0f0f2; border-radius: 4px; padding: 0 4px; font-size: .67rem; font-weight: 600; color: #888; margin-left: 4px; vertical-align: middle; }
 .file-actions { display: flex; gap: .4rem; flex-shrink: 0; }
-
-.btn-icon {
-  width: 32px; height: 32px; border-radius: 7px; border: none; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  transition: background .12s; background: #f0f0f2;
-  -webkit-tap-highlight-color: transparent;
-}
-.btn-icon:hover        { background: #e4e4e8; }
+.btn-icon { width: 32px; height: 32px; border-radius: 7px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background .12s; background: #f0f0f2; -webkit-tap-highlight-color: transparent; }
+.btn-icon:hover { background: #e4e4e8; }
 .btn-icon.danger:hover { background: #fde8e8; }
 .btn-icon svg { width: 14px; height: 14px; stroke: #444; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
 .btn-icon.danger svg { stroke: #c0392b; }
-
-/* ── Empty state ── */
-.empty-state       { text-align: center; padding: 2.5rem 1rem; color: #bbb; }
-.empty-state-icon  { width: 40px; height: 40px; margin: 0 auto .75rem; opacity: .3; }
+.empty-state { text-align: center; padding: 2.5rem 1rem; color: #bbb; }
+.empty-state-icon { width: 40px; height: 40px; margin: 0 auto .75rem; opacity: .3; }
 .empty-state-icon svg { width: 100%; height: 100%; }
-.empty-state p     { font-size: .85rem; }
+.empty-state p { font-size: .85rem; }
 
 /* ── Download progress ── */
 .dl-progress-bar {
@@ -322,9 +179,9 @@ body {
   padding: .9rem 1.1rem; box-shadow: 0 4px 20px rgba(0,0,0,.12); display: none; z-index: 100;
 }
 .dl-filename { font-size: .8rem; font-weight: 600; margin-bottom: .55rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.dl-track    { height: 4px; background: #e8e8ec; border-radius: 2px; overflow: hidden; }
-.dl-fill     { height: 100%; background: #1a1a1a; border-radius: 2px; transition: width .1s; width: 0; }
-.dl-label    { font-size: .71rem; color: #999; margin-top: .35rem; }
+.dl-track { height: 4px; background: #e8e8ec; border-radius: 2px; overflow: hidden; }
+.dl-fill  { height: 100%; background: #1a1a1a; border-radius: 2px; transition: width .1s; width: 0; }
+.dl-label { font-size: .71rem; color: #999; margin-top: .35rem; }
 
 /* ── Toast ── */
 .toast {
@@ -337,44 +194,15 @@ body {
 .toast.ok    { background: #34a853; }
 .toast.error { background: #c0392b; }
 
-/* ── Footer ── */
-.app-footer {
-  text-align: center; padding: 1.5rem; font-size: .72rem; color: #ccc;
-  border-top: 1px solid #f0f0f2; margin-top: auto;
-}
-.auth-footer { margin-top: 1.25rem; font-size: .72rem; color: #bbb; text-align: center; }
-
-/* ── Spinner ── */
-.spinner {
-  width: 18px; height: 18px; border: 2px solid #e8e8ec; border-top-color: #1a1a1a;
-  border-radius: 50%; animation: spin .6s linear infinite;
-  display: inline-block; vertical-align: middle;
-}
+.app-footer { text-align: center; padding: 1.5rem; font-size: .72rem; color: #ccc; border-top: 1px solid #f0f0f2; margin-top: auto; }
+.spinner { width: 18px; height: 18px; border: 2px solid #e8e8ec; border-top-color: #1a1a1a; border-radius: 50%; animation: spin .6s linear infinite; display: inline-block; vertical-align: middle; }
 @keyframes spin { to { transform: rotate(360deg); } }
-.loading-row {
-  display: flex; align-items: center; justify-content: center;
-  gap: .6rem; padding: 2rem 0; color: #bbb; font-size: .85rem;
-}
+.loading-row { display: flex; align-items: center; justify-content: center; gap: .6rem; padding: 2rem 0; color: #bbb; font-size: .85rem; }
 
-/* ── Responsive breakpoints ── */
-@media (max-width: 380px) {
-  .auth-card     { padding: 1.6rem 1.1rem; }
-  .app-body      { padding: 1rem .75rem 4rem; }
-  .user-chip     { max-width: 72px; }
-  .app-topbar    { padding: 0 .85rem; }
-}
-@media (min-width: 640px) {
-  .app-topbar    { padding: 0 2rem; height: 56px; }
-  .app-brand-logo { width: 28px; height: 28px; }
-  .app-brand-text h1   { font-size: .95rem; }
-  .app-brand-text .repo-label { font-size: .72rem; }
-  .user-chip     { max-width: 160px; font-size: .78rem; }
-  .btn-signout   { width: 34px; height: 34px; }
-}
-@media (min-width: 1024px) {
-  .app-topbar    { padding: 0 2.5rem; }
-  .app-body      { padding: 1.5rem 1rem 5rem; }
-}
+/* ── Responsive ── */
+@media (max-width: 380px) { .auth-card { padding: 1.6rem 1.1rem; } .app-body { padding: 1rem .75rem 4rem; } .user-chip { max-width: 72px; } .app-topbar { padding: 0 .85rem; } }
+@media (min-width: 640px) { .app-topbar { padding: 0 2rem; height: 56px; } .app-brand-logo { width: 28px; height: 28px; } .app-brand-text h1 { font-size: .95rem; } .user-chip { max-width: 160px; font-size: .78rem; } .btn-signout { width: 34px; height: 34px; } }
+@media (min-width: 1024px) { .app-topbar { padding: 0 2.5rem; } .app-body { padding: 1.5rem 1rem 5rem; } }
 </style>
 </head>
 <body>
@@ -384,15 +212,11 @@ body {
   <div class="auth-card">
     <div class="brand">
       <div class="brand-logo">
-        <svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect width="44" height="44" rx="10" fill="#1a1a1a"/>
-          <path d="M12 22h20M22 12v20" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
-        </svg>
+        <svg viewBox="0 0 44 44" fill="none"><rect width="44" height="44" rx="10" fill="#1a1a1a"/><path d="M12 22h20M22 12v20" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg>
       </div>
       <h1>StoreGit</h1>
       <p>Sign in to your storage</p>
     </div>
-
     <div class="field">
       <label for="login-username">Username</label>
       <input id="login-username" type="text" placeholder="your-username"
@@ -400,17 +224,12 @@ body {
     </div>
     <div class="field">
       <label for="login-password">Password</label>
-      <input id="login-password" type="password" placeholder="Your password"
-             autocomplete="current-password">
+      <input id="login-password" type="password" placeholder="Your password" autocomplete="current-password">
     </div>
-
-    <div class="form-error" id="login-error"></div>
+    <div class="form-error"  id="login-error"></div>
     <div class="lockout-msg" id="login-lockout"></div>
-
     <button class="btn btn-primary" id="login-btn" onclick="doLogin()">Sign In</button>
-    <div class="form-note">
-      No account yet? <a href="#" onclick="showScreen('signup');return false;">Create one</a>
-    </div>
+    <div class="form-note">No account yet? <a href="#" onclick="showScreen('signup');return false;">Create one</a></div>
   </div>
 </div>
 
@@ -419,26 +238,20 @@ body {
   <div class="auth-card">
     <div class="brand">
       <div class="brand-logo">
-        <svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect width="44" height="44" rx="10" fill="#1a1a1a"/>
-          <path d="M12 22h20M22 12v20" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
-        </svg>
+        <svg viewBox="0 0 44 44" fill="none"><rect width="44" height="44" rx="10" fill="#1a1a1a"/><path d="M12 22h20M22 12v20" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg>
       </div>
       <h1>StoreGit</h1>
       <p>Create your personal storage</p>
     </div>
-
     <div class="step-indicator">
       <div class="step-dot active" id="sdot-1"></div>
       <div class="step-dot" id="sdot-2"></div>
       <div class="step-dot" id="sdot-3"></div>
     </div>
 
-    <!-- Step 1: Account -->
     <div class="step active" id="step-1">
       <div class="step-title">Choose a username</div>
       <div class="step-sub">This is how you will sign in to StoreGit.</div>
-
       <div class="field">
         <label for="s-username">Username</label>
         <input id="s-username" type="text" placeholder="e.g. alice-smith"
@@ -458,47 +271,38 @@ body {
         <label for="s-password2">Confirm Password</label>
         <input id="s-password2" type="password" placeholder="Repeat password" autocomplete="new-password">
       </div>
-
       <div class="form-error" id="step1-error"></div>
       <button class="btn btn-primary" onclick="step1Next()">Continue</button>
     </div>
 
-    <!-- Step 2: GitHub -->
     <div class="step" id="step-2">
       <div class="step-title">Connect your GitHub repository</div>
       <div class="step-sub">Your files will be stored in a repository you own.</div>
-
       <a class="link-row" href="https://github.com/new" target="_blank" rel="noopener noreferrer">
         <span>+</span><span>Create a new repository on GitHub</span>
       </a>
-
       <div class="field">
         <label for="s-gh-token">GitHub Token</label>
         <input id="s-gh-token" class="mono" type="password" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
                autocomplete="off" autocorrect="off" spellcheck="false">
         <div class="field-hint">
-          <a href="https://github.com/settings/tokens/new?scopes=repo&description=StoreGit"
-             target="_blank" rel="noopener">Generate a token here</a>
+          <a href="https://github.com/settings/tokens/new?scopes=repo&description=StoreGit" target="_blank" rel="noopener">Generate a token here</a>
           — enable the <strong>repo</strong> scope. Stored encrypted.
         </div>
       </div>
       <div class="field">
         <label for="s-gh-owner">Repository Owner (your GitHub username)</label>
-        <input id="s-gh-owner" placeholder="your-github-username"
-               autocomplete="off" autocorrect="off" spellcheck="false">
+        <input id="s-gh-owner" placeholder="your-github-username" autocomplete="off" autocorrect="off" spellcheck="false">
       </div>
       <div class="field">
         <label for="s-gh-repo">Repository Name</label>
-        <input id="s-gh-repo" placeholder="my-storage"
-               autocomplete="off" autocorrect="off" spellcheck="false">
+        <input id="s-gh-repo" placeholder="my-storage" autocomplete="off" autocorrect="off" spellcheck="false">
       </div>
-
       <div class="form-error" id="step2-error"></div>
       <button class="btn btn-primary" id="step2-btn" onclick="step2Next()">Verify &amp; Continue</button>
       <button class="btn btn-ghost" style="margin-top:.5rem" onclick="goToStep(1)">Back</button>
     </div>
 
-    <!-- Step 3: Done -->
     <div class="step" id="step-3">
       <div class="verify-badge">
         <div class="vb-icon"></div>
@@ -520,10 +324,7 @@ body {
   <div class="app-topbar">
     <div class="app-brand">
       <div class="app-brand-logo">
-        <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect width="28" height="28" rx="6" fill="#1a1a1a"/>
-          <path d="M7 14h14M14 7v14" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
-        </svg>
+        <svg viewBox="0 0 28 28" fill="none"><rect width="28" height="28" rx="6" fill="#1a1a1a"/><path d="M7 14h14M14 7v14" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
       </div>
       <div class="app-brand-text">
         <h1>StoreGit</h1>
@@ -532,23 +333,17 @@ body {
     </div>
     <div class="topbar-right">
       <div class="user-chip" id="user-chip" title=""></div>
-      <!-- Sign-out: exit/logout SVG icon -->
       <button class="btn-signout" onclick="doLogout()" title="Sign out" aria-label="Sign out">
-        <svg viewBox="0 0 24 24">
-          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-          <polyline points="16 17 21 12 16 7"/>
-          <line x1="21" y1="12" x2="9" y2="12"/>
-        </svg>
+        <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
       </button>
     </div>
   </div>
 
   <div class="app-body">
-
     <div class="card">
       <div class="card-header">
         <div class="card-title">Upload</div>
-        <span style="font-size:.73rem;color:#bbb" id="max-size-label">Max 95 MB per file</span>
+        <span style="font-size:.73rem;color:#bbb">Max 10 GB per file</span>
       </div>
       <div class="drop-zone" id="drop-zone">
         <input type="file" id="file-input" multiple onchange="onFilePicked(this.files)">
@@ -559,7 +354,7 @@ body {
           </svg>
         </div>
         <div class="drop-zone-title">Click to select files or drag them here</div>
-        <div class="drop-zone-sub">Up to 95 MB per file</div>
+        <div class="drop-zone-sub">Files above 20 MB are split into secure chunks automatically</div>
       </div>
       <div class="upload-queue" id="upload-queue"></div>
       <div class="upload-actions" id="upload-actions">
@@ -575,12 +370,10 @@ body {
       </div>
       <div id="file-list"></div>
     </div>
-
   </div>
   <div class="app-footer">Created by Deb Guin &nbsp;&middot;&nbsp; StoreGit</div>
 </div>
 
-<!-- Download progress bar -->
 <div class="dl-progress-bar" id="dl-bar">
   <div class="dl-filename" id="dl-filename"></div>
   <div class="dl-track"><div class="dl-fill" id="dl-fill"></div></div>
@@ -592,7 +385,14 @@ body {
 <script>
 'use strict';
 
-const MAX_FILE = 95 * 1024 * 1024;
+// ── Limits ────────────────────────────────────────────────
+// Files above CHUNK_THRESHOLD are split into CHUNK_SIZE pieces and
+// uploaded via /api/upload-chunk + /api/finalize-upload.
+// Files at or below go through the single /api/upload endpoint.
+const CHUNK_THRESHOLD = 20 * 1024 * 1024;   // 20 MB — start chunking above this
+const CHUNK_SIZE      = 90 * 1024 * 1024;   // 90 MB per chunk (GitHub blob limit ~100 MB)
+const MAX_FILE_SIZE   = 10 * 1024 * 1024 * 1024; // 10 GB total (111 chunks × 90 MB)
+
 const BLOCKED_EXTS = new Set([
   'exe','bat','cmd','com','msi','ps1','psm1',
   'sh','bash','zsh','fish','command',
@@ -606,12 +406,13 @@ const BLOCKED_EXTS = new Set([
   'scr','pif','reg','lnk','app','dmg','pkg','deb','rpm','apk',
 ]);
 
+// ── State ─────────────────────────────────────────────────
 let SESSION_TOKEN = '';
 let loginLocked   = false;
-let uploadPending = [];
+let uploadPending = []; // { file, status }
 let _signupData   = {};
 
-// ── Boot ─────────────────────────────────────────────────
+// ── Boot ──────────────────────────────────────────────────
 (async () => {
   try {
     const r = await fetch('/api/status');
@@ -620,12 +421,11 @@ let _signupData   = {};
       document.getElementById('login-screen').innerHTML =
         '<div class="auth-card" style="text-align:center;padding:2.5rem 2rem">' +
         '<h2 style="margin-bottom:.75rem;font-size:1rem">Service Not Configured</h2>' +
-        '<p style="font-size:.83rem;color:#666;line-height:1.6">The operator has not set the required environment variables.<br>Please refer to the README for setup instructions.</p>' +
+        '<p style="font-size:.83rem;color:#666;line-height:1.6">The operator has not set the required environment variables.<br>Refer to the README for setup instructions.</p>' +
         '</div>';
-      showScreen('login');
-      return;
+      showScreen('login'); return;
     }
-  } catch { /* offline — show login */ }
+  } catch {}
 
   const saved = sessionStorage.getItem('sg_tok');
   if (saved) {
@@ -634,33 +434,23 @@ let _signupData   = {};
       const r = await fetch('/api/me', { credentials:'same-origin', headers: H() });
       if (r.ok) { bootApp(await r.json()); return; }
     } catch {}
-    SESSION_TOKEN = '';
-    sessionStorage.removeItem('sg_tok');
+    SESSION_TOKEN = ''; sessionStorage.removeItem('sg_tok');
   }
   showScreen('login');
 })();
 
-// ── Screen management ─────────────────────────────────────
 function showScreen(name) {
   document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
   document.getElementById('app-screen').classList.remove('active');
-  if (name === 'app') {
-    document.getElementById('app-screen').classList.add('active');
-  } else {
-    const el = document.getElementById(`${name}-screen`);
-    if (el) el.classList.add('active');
-  }
+  if (name === 'app') document.getElementById('app-screen').classList.add('active');
+  else { const el = document.getElementById(`${name}-screen`); if (el) el.classList.add('active'); }
 }
 
 const H = () => ({ 'X-Session-Token': SESSION_TOKEN });
 
 // ── Login ─────────────────────────────────────────────────
-document.getElementById('login-username').addEventListener('keydown', e => {
-  if (e.key === 'Enter') document.getElementById('login-password').focus();
-});
-document.getElementById('login-password').addEventListener('keydown', e => {
-  if (e.key === 'Enter') doLogin();
-});
+document.getElementById('login-username').addEventListener('keydown', e => { if (e.key==='Enter') document.getElementById('login-password').focus(); });
+document.getElementById('login-password').addEventListener('keydown', e => { if (e.key==='Enter') doLogin(); });
 
 async function doLogin() {
   if (loginLocked) return;
@@ -668,37 +458,29 @@ async function doLogin() {
   const password = document.getElementById('login-password').value;
   const errEl    = document.getElementById('login-error');
   const btn      = document.getElementById('login-btn');
-
   errEl.textContent = '';
   if (!username || !password) { errEl.textContent = 'Please enter your username and password.'; return; }
-
-  btn.disabled = true;
-  btn.innerHTML = '<span class="spinner"></span>';
-
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>';
   try {
     const r = await fetch('/api/auth', {
-      method: 'POST', credentials: 'same-origin',
-      headers: { 'Content-Type': 'application/json' },
+      method:'POST', credentials:'same-origin',
+      headers:{ 'Content-Type':'application/json' },
       body: JSON.stringify({ username, password }),
     });
     document.getElementById('login-password').value = '';
-
     if (r.ok) {
-      const data = await r.json();
+      const d = await r.json();
       SESSION_TOKEN = r.headers.get('X-Session-Token') || '';
       if (SESSION_TOKEN) sessionStorage.setItem('sg_tok', SESSION_TOKEN);
-      bootApp({ display: data.display || username, username });
+      bootApp({ display: d.display || username, username });
     } else if (r.status === 429) {
       startLockout(15 * 60);
     } else {
       errEl.textContent = 'Incorrect username or password.';
       document.getElementById('login-password').focus();
     }
-  } catch {
-    errEl.textContent = 'Connection error. Please try again.';
-  }
-  btn.disabled = false;
-  btn.textContent = 'Sign In';
+  } catch { errEl.textContent = 'Connection error. Please try again.'; }
+  btn.disabled = false; btn.textContent = 'Sign In';
 }
 
 function startLockout(secs) {
@@ -707,9 +489,9 @@ function startLockout(secs) {
   const el  = document.getElementById('login-lockout');
   btn.disabled = true;
   const tick = () => {
-    const m = Math.floor(secs / 60), s = secs % 60;
+    const m = Math.floor(secs/60), s = secs%60;
     el.textContent = `Too many attempts. Try again in ${m}:${String(s).padStart(2,'0')}.`;
-    if (secs-- <= 0) { loginLocked = false; btn.disabled = false; el.textContent = ''; clearInterval(t); }
+    if (secs-- <= 0) { loginLocked=false; btn.disabled=false; el.textContent=''; clearInterval(t); }
   };
   tick(); const t = setInterval(tick, 1000);
 }
@@ -717,405 +499,368 @@ function startLockout(secs) {
 function bootApp(me) {
   const chip = document.getElementById('user-chip');
   chip.textContent = me.display || me.username;
-  chip.title       = me.display || me.username;
-  showScreen('app');
-  loadMeta();
-  loadFiles();
+  chip.title = me.display || me.username;
+  showScreen('app'); loadMeta(); loadFiles();
 }
-
 async function loadMeta() {
   try {
-    const r = await fetch('/api/me', { credentials:'same-origin', headers: H() });
-    if (r.ok) {
-      const d = await r.json();
-      document.getElementById('repo-label').textContent = d.repo || '';
-    }
+    const r = await fetch('/api/me', { credentials:'same-origin', headers:H() });
+    if (r.ok) { const d = await r.json(); document.getElementById('repo-label').textContent = d.repo||''; }
   } catch {}
 }
-
 async function doLogout() {
   if (!confirm('Sign out of StoreGit?')) return;
-  try { await fetch('/api/logout', { method:'POST', credentials:'same-origin', headers: H() }); } catch {}
-  SESSION_TOKEN = '';
-  sessionStorage.removeItem('sg_tok');
-  uploadPending = [];
-  clearQueue();
-  showScreen('login');
+  try { await fetch('/api/logout',{method:'POST',credentials:'same-origin',headers:H()}); } catch {}
+  SESSION_TOKEN=''; sessionStorage.removeItem('sg_tok');
+  uploadPending=[]; clearQueue(); showScreen('login');
 }
 
-// ── Signup step 1 ─────────────────────────────────────────
+// ── Signup ────────────────────────────────────────────────
 function goToStep(n) {
   [1,2,3].forEach(i => {
-    document.getElementById(`step-${i}`).classList.toggle('active', i === n);
-    const dot = document.getElementById(`sdot-${i}`);
-    dot.className = 'step-dot' + (i < n ? ' done' : i === n ? ' active' : '');
+    document.getElementById(`step-${i}`).classList.toggle('active', i===n);
+    const d = document.getElementById(`sdot-${i}`);
+    d.className = 'step-dot' + (i<n?' done':i===n?' active':'');
   });
-  document.getElementById('signup-footer-note').style.display = n === 3 ? 'none' : '';
+  document.getElementById('signup-footer-note').style.display = n===3?'none':'';
 }
-
 function updateStrength(pw) {
-  const wrap  = document.getElementById('pw-strength');
-  const fill  = document.getElementById('pw-strength-fill');
-  const label = document.getElementById('pw-strength-label');
-  if (!pw) { wrap.style.display = 'none'; return; }
-  wrap.style.display = 'block';
-  let score = 0;
-  if (pw.length >= 8)  score++;
-  if (pw.length >= 12) score++;
-  if (/[A-Z]/.test(pw) && /[a-z]/.test(pw)) score++;
-  if (/[0-9]/.test(pw)) score++;
-  if (/[^a-zA-Z0-9]/.test(pw)) score++;
-  const levels = [
-    { pct:10,  color:'#c0392b', text:'Very weak'   },
-    { pct:30,  color:'#e67e22', text:'Weak'         },
-    { pct:55,  color:'#f1c40f', text:'Fair'         },
-    { pct:80,  color:'#2ecc71', text:'Strong'       },
-    { pct:100, color:'#34a853', text:'Very strong'  },
-  ];
-  const lv = levels[Math.min(score, levels.length - 1)];
-  fill.style.width      = lv.pct + '%';
-  fill.style.background = lv.color;
-  label.textContent     = lv.text;
+  const wrap=document.getElementById('pw-strength'), fill=document.getElementById('pw-strength-fill'), label=document.getElementById('pw-strength-label');
+  if (!pw){wrap.style.display='none';return;} wrap.style.display='block';
+  let s=0; if(pw.length>=8)s++; if(pw.length>=12)s++; if(/[A-Z]/.test(pw)&&/[a-z]/.test(pw))s++; if(/[0-9]/.test(pw))s++; if(/[^a-zA-Z0-9]/.test(pw))s++;
+  const L=[{pct:10,color:'#c0392b',text:'Very weak'},{pct:30,color:'#e67e22',text:'Weak'},{pct:55,color:'#f1c40f',text:'Fair'},{pct:80,color:'#2ecc71',text:'Strong'},{pct:100,color:'#34a853',text:'Very strong'}];
+  const lv=L[Math.min(s,L.length-1)]; fill.style.width=lv.pct+'%'; fill.style.background=lv.color; label.textContent=lv.text;
 }
-
 function step1Next() {
-  const username = document.getElementById('s-username').value.trim();
-  const pw       = document.getElementById('s-password').value;
-  const pw2      = document.getElementById('s-password2').value;
-  const err      = document.getElementById('step1-error');
-  err.textContent = '';
-  if (!username) { err.textContent = 'Please enter a username.'; return; }
-  if (!/^[a-zA-Z0-9_\-]{3,32}$/.test(username)) { err.textContent = 'Username must be 3–32 characters: letters, numbers, hyphens, underscores.'; return; }
-  if (pw.length < 8) { err.textContent = 'Password must be at least 8 characters.'; return; }
-  if (pw !== pw2)    { err.textContent = 'Passwords do not match.'; return; }
-  _signupData.username = username;
-  _signupData.password = pw;
-  goToStep(2);
+  const u=document.getElementById('s-username').value.trim(), p=document.getElementById('s-password').value, p2=document.getElementById('s-password2').value, e=document.getElementById('step1-error');
+  e.textContent='';
+  if(!u){e.textContent='Please enter a username.';return;}
+  if(!/^[a-zA-Z0-9_\-]{3,32}$/.test(u)){e.textContent='Username must be 3–32 characters: letters, numbers, hyphens, underscores.';return;}
+  if(p.length<8){e.textContent='Password must be at least 8 characters.';return;}
+  if(p!==p2){e.textContent='Passwords do not match.';return;}
+  _signupData.username=u; _signupData.password=p; goToStep(2);
 }
-
-// ── Signup step 2 ─────────────────────────────────────────
 async function step2Next() {
-  const ghToken = document.getElementById('s-gh-token').value.trim();
-  const ghOwner = document.getElementById('s-gh-owner').value.trim();
-  const ghRepo  = document.getElementById('s-gh-repo').value.trim();
-  const err     = document.getElementById('step2-error');
-  const btn     = document.getElementById('step2-btn');
-
-  err.textContent = '';
-  if (!ghToken || !ghOwner || !ghRepo) { err.textContent = 'Please fill in all fields.'; return; }
-  if (!ghToken.startsWith('ghp_') && !ghToken.startsWith('github_pat_')) {
-    err.textContent = 'Token should start with ghp_ or github_pat_'; return;
-  }
-
-  btn.disabled = true;
-  btn.innerHTML = '<span class="spinner"></span> Verifying…';
-
+  const t=document.getElementById('s-gh-token').value.trim(), o=document.getElementById('s-gh-owner').value.trim(), r=document.getElementById('s-gh-repo').value.trim();
+  const err=document.getElementById('step2-error'), btn=document.getElementById('step2-btn');
+  err.textContent='';
+  if(!t||!o||!r){err.textContent='Please fill in all fields.';return;}
+  if(!t.startsWith('ghp_')&&!t.startsWith('github_pat_')){err.textContent='Token should start with ghp_ or github_pat_';return;}
+  btn.disabled=true; btn.innerHTML='<span class="spinner"></span> Verifying…';
   try {
-    const r = await fetch(
-      `https://api.github.com/repos/${encodeURIComponent(ghOwner)}/${encodeURIComponent(ghRepo)}`,
-      { headers: { Authorization:`token ${ghToken}`, Accept:'application/vnd.github.v3+json', 'User-Agent':'StoreGit-Setup' } }
-    );
-    if (r.status === 401) { err.textContent = 'Invalid GitHub token. Please check and try again.'; return; }
-    if (r.status === 404) { err.textContent = 'Repository not found. Check the owner and repo name.'; return; }
-    if (!r.ok) { err.textContent = `GitHub returned an error (${r.status}). Please try again.`; return; }
-
-    const repo = await r.json();
-    if (!repo.permissions?.push && !repo.permissions?.admin) {
-      err.textContent = 'Your token does not have write access to this repository.'; return;
-    }
-
-    const sr = await fetch('/api/signup', {
-      method: 'POST', credentials: 'same-origin',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        username: _signupData.username, password: _signupData.password,
-        ghToken, ghOwner, ghRepo, ghBranch:'main', folder:'uploads',
-      }),
-    });
-    const sd = await sr.json();
-
-    if (sr.ok) {
-      _signupData = {};
-      document.getElementById('s-password').value  = '';
-      document.getElementById('s-password2').value = '';
-      document.getElementById('s-gh-token').value  = '';
+    const gr = await fetch(`https://api.github.com/repos/${encodeURIComponent(o)}/${encodeURIComponent(r)}`,
+      {headers:{Authorization:`token ${t}`,Accept:'application/vnd.github.v3+json','User-Agent':'StoreGit-Setup'}});
+    if(gr.status===401){err.textContent='Invalid GitHub token.';return;}
+    if(gr.status===404){err.textContent='Repository not found.';return;}
+    if(!gr.ok){err.textContent=`GitHub error (${gr.status}).`;return;}
+    const repo=await gr.json();
+    if(!repo.permissions?.push&&!repo.permissions?.admin){err.textContent='Token needs write access to this repository.';return;}
+    const sr=await fetch('/api/signup',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({username:_signupData.username,password:_signupData.password,ghToken:t,ghOwner:o,ghRepo:r,ghBranch:'main',folder:'uploads'})});
+    const sd=await sr.json();
+    if(sr.ok){
+      _signupData={}; document.getElementById('s-password').value=''; document.getElementById('s-password2').value=''; document.getElementById('s-gh-token').value='';
       goToStep(3);
-    } else if (sr.status === 409) {
-      err.textContent = 'That username is already taken. Please choose another.';
-    } else {
-      err.textContent = sd.error || 'Signup failed. Please try again.';
-    }
-  } catch {
-    err.textContent = 'Connection error. Please check your internet and try again.';
-  } finally {
-    btn.disabled = false;
-    btn.textContent = 'Verify & Continue';
-  }
+    } else if(sr.status===409){err.textContent='That username is already taken.';}
+    else{err.textContent=sd.error||'Signup failed.';}
+  } catch{err.textContent='Connection error. Please try again.';}
+  finally{btn.disabled=false;btn.textContent='Verify & Continue';}
 }
 
 // ── File list ─────────────────────────────────────────────
 async function loadFiles() {
-  const el = document.getElementById('file-list');
-  el.innerHTML = '<div class="loading-row"><span class="spinner"></span> Loading files…</div>';
+  const el=document.getElementById('file-list');
+  el.innerHTML='<div class="loading-row"><span class="spinner"></span> Loading files…</div>';
   try {
-    const r = await fetch('/api/files', { credentials:'same-origin', headers: H() });
-    if (r.status === 401) { doLogout(); return; }
-    if (!r.ok) throw new Error('Failed to load files.');
+    const r=await fetch('/api/files',{credentials:'same-origin',headers:H()});
+    if(r.status===401){doLogout();return;}
+    if(!r.ok) throw new Error('Failed to load files.');
     renderFiles(await r.json());
-  } catch (e) {
-    el.innerHTML = '';
-    el.appendChild(emptyState(escText(e.message)));
-  }
+  } catch(e){el.innerHTML='';el.appendChild(emptyState(e.message));}
 }
 
 function renderFiles(files) {
-  const el = document.getElementById('file-list');
-  el.innerHTML = '';
-  // Hide internal marker file — exists on GitHub but must not appear in the UI
-  const visible = files.filter(f => f.name !== '.storegit');
-  if (!visible.length) { el.appendChild(emptyState('No files uploaded yet.')); return; }
-  for (const f of visible) {
-    const row   = elem('div', 'file-row');
-    const badge = elem('div', 'file-type-badge');
+  const el=document.getElementById('file-list');
+  el.innerHTML='';
+  // Filter out .storegit marker
+  const visible=files.filter(f=>f.name!=='.storegit');
+  if(!visible.length){el.appendChild(emptyState('No files uploaded yet.'));return;}
+
+  for(const f of visible){
+    const row   = elem('div','file-row');
+    const badge = elem('div', f.chunked ? 'file-type-badge chunked' : 'file-type-badge');
     badge.textContent = fileExt(f.name);
 
-    const info = elem('div', 'file-info');
-    const nm   = elem('div', 'file-name'); nm.textContent = f.name; nm.title = f.name;
-    const mt   = elem('div', 'file-meta'); mt.textContent = fmtSize(f.size);
-    info.append(nm, mt);
+    const info = elem('div','file-info');
+    const nm   = elem('div','file-name'); nm.textContent=f.name; nm.title=f.name;
+    const mt   = elem('div','file-meta'); mt.textContent=fmtSize(f.size);
+    // Show a subtle "X parts" badge for chunked files
+    if(f.chunked && f.parts > 1){
+      const sp = document.createElement('span');
+      sp.className='multi-badge'; sp.textContent=`${f.parts} parts`;
+      mt.appendChild(sp);
+    }
+    info.append(nm,mt);
 
-    const actions = elem('div', 'file-actions');
-
-    const dlBtn = elem('button', 'btn-icon');
-    dlBtn.title = 'Download';
-    dlBtn.innerHTML = `<svg viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></svg>`;
-    dlBtn.onclick = () => downloadFile(f.name, f.size);
-
-    const delBtn = elem('button', 'btn-icon danger');
-    delBtn.title = 'Delete';
-    delBtn.innerHTML = `<svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>`;
-    delBtn.onclick = () => deleteFile(f.name, f.sha, row);
-
-    actions.append(dlBtn, delBtn);
-    row.append(badge, info, actions);
+    const actions = elem('div','file-actions');
+    const dlBtn = elem('button','btn-icon');
+    dlBtn.title='Download';
+    dlBtn.innerHTML=`<svg viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></svg>`;
+    dlBtn.onclick=()=>downloadFile(f.name,f.size);
+    const delBtn = elem('button','btn-icon danger');
+    delBtn.title='Delete';
+    delBtn.innerHTML=`<svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>`;
+    delBtn.onclick=()=>deleteFile(f.name, f.sha, f.chunked||false, row);
+    actions.append(dlBtn,delBtn);
+    row.append(badge,info,actions);
     el.appendChild(row);
   }
 }
 
-async function deleteFile(name, sha, rowEl) {
-  if (!confirm(`Permanently delete "${name}"?\n\nThis cannot be undone.`)) return;
+async function deleteFile(name, sha, chunked, rowEl) {
+  const msg = chunked
+    ? `Permanently delete "${name}"?\n\nThis file has multiple parts. All parts will be removed. This cannot be undone.`
+    : `Permanently delete "${name}"?\n\nThis cannot be undone.`;
+  if (!confirm(msg)) return;
   try {
-    const r = await fetch('/api/delete', {
-      method: 'DELETE', credentials: 'same-origin',
-      headers: { ...H(), 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, sha }),
-    });
-    if (r.status === 401) { doLogout(); return; }
-    if (r.ok) { rowEl.remove(); toast('File deleted.', 'ok'); }
-    else toast('Delete failed.', 'error');
-  } catch { toast('Delete failed.', 'error'); }
+    const body = chunked ? { name, chunked:true } : { name, sha };
+    const r=await fetch('/api/delete',{method:'DELETE',credentials:'same-origin',
+      headers:{...H(),'Content-Type':'application/json'},body:JSON.stringify(body)});
+    if(r.status===401){doLogout();return;}
+    if(r.ok){rowEl.remove();toast('File deleted.','ok');}
+    else toast('Delete failed.','error');
+  } catch{toast('Delete failed.','error');}
 }
 
-// ── Download — fetch + blob → instant save ───────────────
+// ── Download ──────────────────────────────────────────────
 async function downloadFile(name, size) {
-  const bar  = document.getElementById('dl-bar');
-  const fill = document.getElementById('dl-fill');
-  const lbl  = document.getElementById('dl-label');
-  const fnEl = document.getElementById('dl-filename');
-  const url  = `/api/download?name=${encodeURIComponent(name)}`;
-
+  const bar=document.getElementById('dl-bar'), fill=document.getElementById('dl-fill'),
+        lbl=document.getElementById('dl-label'), fnEl=document.getElementById('dl-filename');
+  const url=`/api/download?name=${encodeURIComponent(name)}`;
   try {
-    const r = await fetch(url, { credentials:'same-origin', headers: H() });
-    if (r.status === 401) { doLogout(); return; }
-    if (!r.ok) { toast('Download failed.', 'error'); return; }
-
-    const contentLen = parseInt(r.headers.get('Content-Length') || '0', 10);
-    const knownSize  = contentLen || size || 0;
-    const showBar    = knownSize > 2 * 1024 * 1024 && typeof ReadableStream !== 'undefined' && r.body;
-
-    if (showBar) {
-      fnEl.textContent  = name;
-      fill.style.width  = '0%';
-      lbl.textContent   = 'Starting…';
-      bar.style.display = 'block';
-
-      const reader = r.body.getReader();
-      const chunks = [];
-      let received = 0;
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        chunks.push(value);
-        received += value.length;
-        if (knownSize > 0) {
-          const pct = Math.min(100, Math.round(received / knownSize * 100));
-          fill.style.width = pct + '%';
-          lbl.textContent  = `${fmtSize(received)} of ${fmtSize(knownSize)}`;
-        } else {
-          lbl.textContent = `${fmtSize(received)} downloaded…`;
-        }
+    const r=await fetch(url,{credentials:'same-origin',headers:H()});
+    if(r.status===401){doLogout();return;}
+    if(!r.ok){toast('Download failed.','error');return;}
+    const contentLen=parseInt(r.headers.get('Content-Length')||'0',10);
+    const knownSize=contentLen||size||0;
+    const showBar=knownSize>2*1024*1024&&typeof ReadableStream!=='undefined'&&r.body;
+    if(showBar){
+      fnEl.textContent=name; fill.style.width='0%'; lbl.textContent='Starting…'; bar.style.display='block';
+      const reader=r.body.getReader(), chunks=[];
+      let received=0;
+      while(true){
+        const{done,value}=await reader.read(); if(done)break;
+        chunks.push(value); received+=value.length;
+        if(knownSize>0){
+          const pct=Math.min(100,Math.round(received/knownSize*100));
+          fill.style.width=pct+'%'; lbl.textContent=`${fmtSize(received)} of ${fmtSize(knownSize)}`;
+        } else { lbl.textContent=`${fmtSize(received)} downloaded…`; }
       }
-      bar.style.display = 'none';
-      triggerSave(new Blob(chunks), name);
-    } else {
-      triggerSave(await r.blob(), name);
-    }
-    toast('Saved to Downloads.', 'ok');
-  } catch {
-    document.getElementById('dl-bar').style.display = 'none';
-    toast('Download failed.', 'error');
-  }
+      bar.style.display='none'; triggerSave(new Blob(chunks),name);
+    } else { triggerSave(await r.blob(),name); }
+    toast('Saved to Downloads.','ok');
+  } catch{ document.getElementById('dl-bar').style.display='none'; toast('Download failed.','error'); }
 }
 
 function triggerSave(blob, filename) {
-  const url = URL.createObjectURL(blob);
-  const a   = document.createElement('a');
-  a.href = url; a.download = filename; a.style.display = 'none';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  setTimeout(() => URL.revokeObjectURL(url), 60000);
+  const url=URL.createObjectURL(blob), a=document.createElement('a');
+  a.href=url; a.download=filename; a.style.display='none';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(url),60000);
 }
 
-// ── Upload — XHR binary multipart ────────────────────────
-const dropZone = document.getElementById('drop-zone');
-dropZone.addEventListener('dragover',  e => { e.preventDefault(); dropZone.classList.add('dragging'); });
-dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragging'));
-dropZone.addEventListener('drop', e => {
-  e.preventDefault(); dropZone.classList.remove('dragging'); onFilePicked(e.dataTransfer.files);
-});
+// ── Upload ────────────────────────────────────────────────
+const dropZone=document.getElementById('drop-zone');
+dropZone.addEventListener('dragover',e=>{e.preventDefault();dropZone.classList.add('dragging');});
+dropZone.addEventListener('dragleave',()=>dropZone.classList.remove('dragging'));
+dropZone.addEventListener('drop',e=>{e.preventDefault();dropZone.classList.remove('dragging');onFilePicked(e.dataTransfer.files);});
 
 function onFilePicked(fileList) {
-  const rejected = [];
-  for (const f of fileList) {
-    if (f.size > MAX_FILE) { rejected.push(`"${f.name}" exceeds the 95 MB limit.`); continue; }
-    const ext = f.name.split('.').pop()?.toLowerCase() || '';
-    if (BLOCKED_EXTS.has(ext)) { rejected.push(`"${f.name}" — file type not permitted.`); continue; }
-    if (!uploadPending.find(p => p.file.name === f.name && p.file.size === f.size))
-      uploadPending.push({ file: f, status: 'wait' });
+  const rejected=[];
+  for(const f of fileList){
+    if(f.size>MAX_FILE_SIZE){rejected.push(`"${f.name}" exceeds the 10 GB limit.`);continue;}
+    const ext=f.name.split('.').pop()?.toLowerCase()||'';
+    if(BLOCKED_EXTS.has(ext)){rejected.push(`"${f.name}" — file type not permitted.`);continue;}
+    if(!uploadPending.find(p=>p.file.name===f.name&&p.file.size===f.size)) uploadPending.push({file:f,status:'wait'});
   }
-  if (rejected.length) toast(rejected[0], 'error');
+  if(rejected.length) toast(rejected[0],'error');
   renderQueue();
 }
 
 function renderQueue() {
-  const qEl = document.getElementById('upload-queue');
-  const aEl = document.getElementById('upload-actions');
-  if (!uploadPending.length) { qEl.style.display = 'none'; aEl.style.display = 'none'; return; }
-  qEl.style.display = 'block'; aEl.style.display = 'flex'; qEl.innerHTML = '';
-
-  uploadPending.forEach((it, i) => {
-    const item  = elem('div', 'queue-item');
-    const badge = elem('div', 'queue-file-icon'); badge.textContent = fileExt(it.file.name);
-    const info  = elem('div', 'queue-info');
-    const nm    = elem('div', 'queue-name'); nm.textContent = it.file.name;
-    const sz    = elem('div', 'queue-size'); sz.textContent = fmtSize(it.file.size);
-    const bar   = elem('div', 'queue-bar');
-    const fill  = elem('div', 'queue-fill'); fill.id = `qfill-${i}`; bar.appendChild(fill);
-    info.append(nm, sz, bar);
-    const st = elem('span', `queue-status ${it.status}`); st.id = `qstat-${i}`; st.textContent = statusLabel(it.status);
-    item.append(badge, info, st); qEl.appendChild(item);
+  const qEl=document.getElementById('upload-queue'), aEl=document.getElementById('upload-actions');
+  if(!uploadPending.length){qEl.style.display='none';aEl.style.display='none';return;}
+  qEl.style.display='block'; aEl.style.display='flex'; qEl.innerHTML='';
+  uploadPending.forEach((it,i)=>{
+    const item=elem('div','queue-item');
+    const badge=elem('div','queue-file-icon'); badge.textContent=fileExt(it.file.name);
+    const info=elem('div','queue-info');
+    const nm=elem('div','queue-name'); nm.textContent=it.file.name;
+    // Show chunk count hint for large files
+    const isLarge=it.file.size>CHUNK_THRESHOLD;
+    const nChunks=isLarge?Math.ceil(it.file.size/CHUNK_SIZE):0;
+    const sz=elem('div','queue-size');
+    sz.textContent=fmtSize(it.file.size)+(isLarge?` — ${nChunks} part${nChunks>1?'s':''}*`:'');
+    const bar=elem('div','queue-bar'), fill=elem('div','queue-fill');
+    fill.id=`qfill-${i}`; bar.appendChild(fill);
+    info.append(nm,sz,bar);
+    const st=elem('span',`queue-status ${it.status}`); st.id=`qstat-${i}`; st.textContent=statusLabel(it.status);
+    item.append(badge,info,st); qEl.appendChild(item);
   });
 }
 
-function clearQueue() {
-  uploadPending = [];
-  document.getElementById('file-input').value = '';
+function clearQueue(){
+  uploadPending=[];
+  document.getElementById('file-input').value='';
   renderQueue();
 }
 
 async function startUpload() {
-  if (!uploadPending.length) return;
-  const btn = document.getElementById('upload-btn');
-  btn.disabled = true; btn.textContent = 'Uploading…';
-
-  for (let i = 0; i < uploadPending.length; i++) {
-    if (uploadPending[i].status === 'ok') continue;
-    setQueueStatus(i, 'go', 0);
-    try { await xhrUpload(uploadPending[i].file, i); setQueueStatus(i, 'ok', 100); }
-    catch (e) { setQueueStatus(i, 'fail', 0); toast(e.message, 'error'); }
+  if(!uploadPending.length) return;
+  const btn=document.getElementById('upload-btn');
+  btn.disabled=true; btn.textContent='Uploading…';
+  for(let i=0;i<uploadPending.length;i++){
+    if(uploadPending[i].status==='ok') continue;
+    setQ(i,'go',0);
+    try{
+      if(uploadPending[i].file.size > CHUNK_THRESHOLD){
+        await chunkedUpload(uploadPending[i].file, i);
+      } else {
+        await xhrUpload(uploadPending[i].file, i);
+      }
+      setQ(i,'ok',100);
+    } catch(e){ setQ(i,'fail',0); toast(e.message,'error'); }
   }
-
-  btn.disabled = false; btn.textContent = 'Upload Files';
-  const failCount = uploadPending.filter(p => p.status === 'fail').length;
-  if (!failCount) { toast('All files uploaded.', 'ok'); clearQueue(); }
-  else toast(`${failCount} file${failCount > 1 ? 's' : ''} failed.`, 'error');
+  btn.disabled=false; btn.textContent='Upload Files';
+  const failed=uploadPending.filter(p=>p.status==='fail').length;
+  if(!failed){toast('All files uploaded.','ok');clearQueue();}
+  else toast(`${failed} file${failed>1?'s':''} failed.`,'error');
   loadFiles();
 }
 
+// ── Single-shot XHR (files ≤ 20 MB) ──────────────────────
 function xhrUpload(file, idx) {
-  return new Promise((resolve, reject) => {
-    const fd = new FormData();
-    fd.append('name', file.name);
-    fd.append('file', file);
-    const xhr = new XMLHttpRequest();
-    xhr.open('POST', '/api/upload');
-    xhr.setRequestHeader('X-Session-Token', SESSION_TOKEN);
-    xhr.upload.onprogress = e => { if (e.lengthComputable) setQueueStatus(idx, 'go', Math.round(e.loaded / e.total * 90)); };
-    xhr.onload = () => {
-      if (xhr.status === 200) { resolve(); return; }
-      if (xhr.status === 401) { doLogout(); reject(new Error('Session expired.')); return; }
-      let msg = 'Upload failed.';
-      try { msg = JSON.parse(xhr.responseText).error || msg; } catch {}
+  return new Promise((resolve,reject)=>{
+    const fd=new FormData(); fd.append('name',file.name); fd.append('file',file);
+    const xhr=new XMLHttpRequest();
+    xhr.open('POST','/api/upload');
+    xhr.setRequestHeader('X-Session-Token',SESSION_TOKEN);
+    xhr.upload.onprogress=e=>{if(e.lengthComputable) setQ(idx,'go',Math.round(e.loaded/e.total*95));};
+    xhr.onload=()=>{
+      if(xhr.status===200){resolve();return;}
+      if(xhr.status===401){doLogout();reject(new Error('Session expired.'));return;}
+      let msg='Upload failed.'; try{msg=JSON.parse(xhr.responseText).error||msg;}catch{}
       reject(new Error(msg));
     };
-    xhr.onerror   = () => reject(new Error('Network error during upload.'));
-    xhr.ontimeout = () => reject(new Error('Upload timed out.'));
-    xhr.timeout   = 15 * 60 * 1000;
+    xhr.onerror=()=>reject(new Error('Network error.'));
+    xhr.ontimeout=()=>reject(new Error('Upload timed out.'));
+    xhr.timeout=10*60*1000;
     xhr.send(fd);
   });
 }
 
-function setQueueStatus(i, status, pct) {
-  uploadPending[i].status = status;
-  const st   = document.getElementById(`qstat-${i}`);
-  const fill = document.getElementById(`qfill-${i}`);
-  if (st)   { st.className = `queue-status ${status}`; st.textContent = statusLabel(status); }
-  if (fill) { fill.style.width = pct + '%'; }
+// ── Chunked upload (files > 20 MB) ───────────────────────
+// Slices the file in the browser, sends each slice to /api/upload-chunk,
+// collects blob SHAs, then calls /api/finalize-upload which commits everything at once.
+async function chunkedUpload(file, idx) {
+  const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
+  const blobs       = [];
+
+  for (let i = 0; i < totalChunks; i++) {
+    const start  = i * CHUNK_SIZE;
+    const end    = Math.min(start + CHUNK_SIZE, file.size);
+    const slice  = file.slice(start, end);        // File.slice() is synchronous, no memory copy
+
+    // Update progress bar: each chunk is (1/totalChunks) of 90% of the bar
+    const chunkProgressBase = Math.round((i / totalChunks) * 90);
+
+    // XHR the chunk with progress
+    const result = await xhrChunk(slice, file.name, i, totalChunks, idx, chunkProgressBase, totalChunks);
+    blobs.push({ index: i, blobSha: result.blobSha, size: slice.size });
+  }
+
+  // All chunks landed — send finalize request
+  setQ(idx, 'go', 92);
+  const fr = await fetch('/api/finalize-upload', {
+    method: 'POST', credentials: 'same-origin',
+    headers: { ...H(), 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      name: file.name, totalSize: file.size,
+      totalChunks, chunkSize: CHUNK_SIZE, blobs,
+    }),
+  });
+  if (fr.status === 401) { doLogout(); throw new Error('Session expired.'); }
+  if (!fr.ok) {
+    const d = await fr.json().catch(()=>({}));
+    throw new Error(d.error || 'Finalize failed.');
+  }
+  setQ(idx, 'go', 99);
 }
+
+function xhrChunk(blob, name, chunkIndex, totalChunks, queueIdx, progressBase, totalChunkCount) {
+  return new Promise((resolve, reject) => {
+    const fd = new FormData();
+    fd.append('name', name);
+    fd.append('file', blob);
+    fd.append('chunkIndex', String(chunkIndex));
+    fd.append('totalChunks', String(totalChunks));
+
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', '/api/upload-chunk');
+    xhr.setRequestHeader('X-Session-Token', SESSION_TOKEN);
+
+    xhr.upload.onprogress = e => {
+      if (e.lengthComputable) {
+        const chunkFraction = e.loaded / e.total;
+        const overall = progressBase + Math.round(chunkFraction * (90 / totalChunkCount));
+        setQ(queueIdx, 'go', Math.min(90, overall));
+      }
+    };
+
+    xhr.onload = () => {
+      if (xhr.status === 200) { resolve(JSON.parse(xhr.responseText)); return; }
+      if (xhr.status === 401) { doLogout(); reject(new Error('Session expired.')); return; }
+      let msg = `Chunk ${chunkIndex + 1} failed.`;
+      try { msg = JSON.parse(xhr.responseText).error || msg; } catch {}
+      reject(new Error(msg));
+    };
+
+    xhr.onerror   = () => reject(new Error(`Network error on chunk ${chunkIndex + 1}.`));
+    xhr.ontimeout = () => reject(new Error(`Chunk ${chunkIndex + 1} timed out.`));
+    xhr.timeout   = 5 * 60 * 1000; // 5 min per 90 MB chunk
+    xhr.send(fd);
+  });
+}
+
+// ── Queue helpers ─────────────────────────────────────────
+function setQ(i, status, pct) {
+  uploadPending[i].status = status;
+  const st=document.getElementById(`qstat-${i}`), fill=document.getElementById(`qfill-${i}`);
+  if(st){st.className=`queue-status ${status}`;st.textContent=statusLabel(status);}
+  if(fill) fill.style.width=pct+'%';
+}
+function statusLabel(s){return{wait:'Ready',go:'Uploading…',ok:'Done',fail:'Failed'}[s]||s;}
 
 // ── Utilities ─────────────────────────────────────────────
-function statusLabel(s) { return { wait:'Ready', go:'Uploading…', ok:'Done', fail:'Failed' }[s] || s; }
-
-function fmtSize(b) {
-  if (b == null || isNaN(b)) return '—';
-  if (b < 1024)       return `${b} B`;
-  if (b < 1048576)    return `${(b/1024).toFixed(1)} KB`;
-  if (b < 1073741824) return `${(b/1048576).toFixed(1)} MB`;
-  return `${(b/1073741824).toFixed(2)} GB`;
+function fmtSize(b){
+  if(b==null||isNaN(b))return'—';
+  if(b<1024)return`${b} B`;
+  if(b<1048576)return`${(b/1024).toFixed(1)} KB`;
+  if(b<1073741824)return`${(b/1048576).toFixed(1)} MB`;
+  return`${(b/1073741824).toFixed(2)} GB`;
 }
-
-function fileExt(name) {
-  const e = (name || '').split('.').pop();
-  return e && e !== name ? e.slice(0, 5).toUpperCase() : 'FILE';
+function fileExt(name){const e=(name||'').split('.').pop();return e&&e!==name?e.slice(0,5).toUpperCase():'FILE';}
+function elem(tag,cls){const el=document.createElement(tag);if(cls)el.className=cls;return el;}
+function emptyState(msg){
+  const d=elem('div','empty-state'),ic=elem('div','empty-state-icon');
+  ic.innerHTML=`<svg viewBox="0 0 40 40" fill="none"><rect x="8" y="6" width="24" height="28" rx="3" stroke="#bbb" stroke-width="1.5"/><path d="M14 15h12M14 20h12M14 25h8" stroke="#bbb" stroke-width="1.5" stroke-linecap="round"/></svg>`;
+  const p=elem('p');p.textContent=msg;d.append(ic,p);return d;
 }
-
-function escText(s) {
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
-
-function elem(tag, cls) {
-  const el = document.createElement(tag);
-  if (cls) el.className = cls;
-  return el;
-}
-
-function emptyState(msg) {
-  const d  = elem('div', 'empty-state');
-  const ic = elem('div', 'empty-state-icon');
-  ic.innerHTML = `<svg viewBox="0 0 40 40" fill="none"><rect x="8" y="6" width="24" height="28" rx="3" stroke="#bbb" stroke-width="1.5"/><path d="M14 15h12M14 20h12M14 25h8" stroke="#bbb" stroke-width="1.5" stroke-linecap="round"/></svg>`;
-  const p = elem('p'); p.textContent = msg;
-  d.append(ic, p);
-  return d;
-}
-
-function toast(msg, type = '') {
-  const el = document.getElementById('toast');
-  el.textContent = String(msg).slice(0, 100);
-  el.className = `toast show${type ? ' ' + type : ''}`;
-  clearTimeout(el._t);
-  el._t = setTimeout(() => { el.className = 'toast'; }, 3500);
+function toast(msg,type=''){
+  const el=document.getElementById('toast');
+  el.textContent=String(msg).slice(0,100);
+  el.className=`toast show${type?' '+type:''}`;
+  clearTimeout(el._t); el._t=setTimeout(()=>{el.className='toast';},3500);
 }
 </script>
 </body>
