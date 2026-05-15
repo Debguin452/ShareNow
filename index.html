@@ -354,7 +354,6 @@ body {
           </svg>
         </div>
         <div class="drop-zone-title">Click to select files or drag them here</div>
-        <div class="drop-zone-sub">Files above 5 MB are split into 10 MB chunks automatically</div>
       </div>
       <div class="upload-queue" id="upload-queue"></div>
       <div class="upload-actions" id="upload-actions">
@@ -777,25 +776,53 @@ async function xhrUpload(file, idx) {
 }
 
 // ── Chunked upload (files > CHUNK_THRESHOLD = 5 MB) ──────────────────
-// Slices the file in the browser, base64-encodes each slice, sends JSON
-// to /api/upload-chunk, collects blob SHAs, then calls /api/finalize-upload.
+// Phase 1: ALL slices are base64-encoded in parallel by the browser
+//          (FileReader is native C++, runs off the JS thread — essentially free).
+// Phase 2: Encoded chunks are uploaded with a concurrency cap of UPLOAD_CONCURRENCY
+//          so 3 requests fly to the Worker at the same time, saturating the pipe
+//          on mobile and desktop alike.
+// Phase 3: /api/finalize-upload stitches the blob SHAs into a Git tree.
+const UPLOAD_CONCURRENCY = 5; // parallel in-flight chunk requests
+
 async function chunkedUpload(file, idx) {
   const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
-  const blobs       = [];
 
-  for (let i = 0; i < totalChunks; i++) {
+  // ── Phase 1: encode every slice in parallel ───────────────────────
+  setQ(idx, 'go', 2);
+  const slices = Array.from({ length: totalChunks }, (_, i) => {
     const start = i * CHUNK_SIZE;
-    const end   = Math.min(start + CHUNK_SIZE, file.size);
-    const slice = file.slice(start, end);
+    return file.slice(start, Math.min(start + CHUNK_SIZE, file.size));
+  });
 
-    const chunkProgressBase = Math.round((i / totalChunks) * 90);
+  // Fire all FileReader encodes simultaneously — browser handles them natively
+  const encoded = await Promise.all(slices.map(s => blobToBase64(s)));
+  setQ(idx, 'go', 18); // encoding done, now upload
 
-    const result = await xhrChunk(slice, file.name, i, totalChunks, idx, chunkProgressBase, totalChunks);
-    blobs.push({ index: i, blobSha: result.blobSha, size: slice.size });
-  }
+  // ── Phase 2: upload with bounded concurrency ──────────────────────
+  const blobs      = new Array(totalChunks);
+  let  doneCount   = 0;
+  const indexQueue = Array.from({ length: totalChunks }, (_, i) => i);
 
-  // All chunks landed — send finalize request
-  setQ(idx, 'go', 92);
+  const runWorker = async () => {
+    while (indexQueue.length > 0) {
+      const i = indexQueue.shift();
+      const result = await xhrChunkEncoded(
+        encoded[i], slices[i].size, file.name, i, totalChunks, idx
+      );
+      blobs[i] = { index: i, blobSha: result.blobSha, size: slices[i].size };
+      doneCount++;
+      // Progress: 18 % encoding done → 92 % uploads done
+      setQ(idx, 'go', 18 + Math.round((doneCount / totalChunks) * 74));
+    }
+  };
+
+  // Spawn up to UPLOAD_CONCURRENCY parallel workers
+  await Promise.all(
+    Array.from({ length: Math.min(UPLOAD_CONCURRENCY, totalChunks) }, runWorker)
+  );
+
+  // ── Phase 3: finalize ─────────────────────────────────────────────
+  setQ(idx, 'go', 93);
   const fr = await fetch('/api/finalize-upload', {
     method: 'POST', credentials: 'same-origin',
     headers: { ...H(), 'Content-Type': 'application/json' },
@@ -806,31 +833,21 @@ async function chunkedUpload(file, idx) {
   });
   if (fr.status === 401) { doLogout(); throw new Error('Session expired.'); }
   if (!fr.ok) {
-    const d = await fr.json().catch(()=>({}));
+    const d = await fr.json().catch(() => ({}));
     throw new Error(d.error || 'Finalize failed.');
   }
   setQ(idx, 'go', 99);
 }
 
-// Browser base64-encodes the slice, then XHRs JSON to Worker.
-// Worker forwards the base64 string directly to GitHub — no re-encoding.
-async function xhrChunk(blob, name, chunkIndex, totalChunks, queueIdx, progressBase, totalChunkCount) {
-  // Encode in browser (free — browser built-in, no JS CPU)
-  const b64 = await blobToBase64(blob);
-
+// Uploads a pre-encoded base64 string for one chunk.
+// Encoding already happened in Phase 1, so this is pure network I/O.
+async function xhrChunkEncoded(b64, rawSize, name, chunkIndex, totalChunks, queueIdx) {
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
     xhr.open('POST', '/api/upload-chunk');
     xhr.setRequestHeader('X-Session-Token', SESSION_TOKEN);
     xhr.setRequestHeader('Content-Type', 'application/json');
-
-    xhr.upload.onprogress = e => {
-      if (e.lengthComputable) {
-        const overall = progressBase + Math.round((e.loaded / e.total) * (90 / totalChunkCount));
-        setQ(queueIdx, 'go', Math.min(90, overall));
-      }
-    };
-
+    xhr.timeout   = 5 * 60 * 1000;
     xhr.onload = () => {
       if (xhr.status === 200) { resolve(JSON.parse(xhr.responseText)); return; }
       if (xhr.status === 401) { doLogout(); reject(new Error('Session expired.')); return; }
@@ -838,10 +855,8 @@ async function xhrChunk(blob, name, chunkIndex, totalChunks, queueIdx, progressB
       try { msg = JSON.parse(xhr.responseText).error || msg; } catch {}
       reject(new Error(msg));
     };
-
     xhr.onerror   = () => reject(new Error(`Network error on chunk ${chunkIndex + 1}.`));
     xhr.ontimeout = () => reject(new Error(`Chunk ${chunkIndex + 1} timed out.`));
-    xhr.timeout   = 5 * 60 * 1000;
     xhr.send(JSON.stringify({ name, chunkIndex, totalChunks, content: b64 }));
   });
 }
