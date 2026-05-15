@@ -738,43 +738,58 @@ async function startUpload() {
   loadFiles();
 }
 
-// ── Single-shot XHR (files ≤ 20 MB) ──────────────────────
-function xhrUpload(file, idx) {
-  return new Promise((resolve,reject)=>{
-    const fd=new FormData(); fd.append('name',file.name); fd.append('file',file);
-    const xhr=new XMLHttpRequest();
-    xhr.open('POST','/api/upload');
-    xhr.setRequestHeader('X-Session-Token',SESSION_TOKEN);
-    xhr.upload.onprogress=e=>{if(e.lengthComputable) setQ(idx,'go',Math.round(e.loaded/e.total*95));};
-    xhr.onload=()=>{
-      if(xhr.status===200){resolve();return;}
-      if(xhr.status===401){doLogout();reject(new Error('Session expired.'));return;}
-      let msg='Upload failed.'; try{msg=JSON.parse(xhr.responseText).error||msg;}catch{}
-      reject(new Error(msg));
-    };
-    xhr.onerror=()=>reject(new Error('Network error.'));
-    xhr.ontimeout=()=>reject(new Error('Upload timed out.'));
-    xhr.timeout=10*60*1000;
-    xhr.send(fd);
+// ── Base64 helper — browser encodes, Worker forwards as-is ───────────
+// FileReader.readAsDataURL is a browser built-in, uses no JS CPU budget.
+function blobToBase64(blob) {
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload  = () => res(r.result.slice(r.result.indexOf(',') + 1));
+    r.onerror = () => rej(new Error('Read failed'));
+    r.readAsDataURL(blob);
   });
 }
 
-// ── Chunked upload (files > 20 MB) ───────────────────────
-// Slices the file in the browser, sends each slice to /api/upload-chunk,
-// collects blob SHAs, then calls /api/finalize-upload which commits everything at once.
+// ── Single-shot upload (files ≤ CHUNK_THRESHOLD = 5 MB) ──────────────
+// Browser base64-encodes, sends JSON. Worker forwards straight to GitHub.
+async function xhrUpload(file, idx) {
+  setQ(idx, 'go', 5);
+  const b64 = await blobToBase64(file);   // native browser encoding, ~0 ms CPU
+  setQ(idx, 'go', 30);
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', '/api/upload');
+    xhr.setRequestHeader('X-Session-Token', SESSION_TOKEN);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.upload.onprogress = e => {
+      if (e.lengthComputable) setQ(idx, 'go', 30 + Math.round(e.loaded / e.total * 65));
+    };
+    xhr.onload = () => {
+      if (xhr.status === 200) { resolve(); return; }
+      if (xhr.status === 401) { doLogout(); reject(new Error('Session expired.')); return; }
+      let msg = 'Upload failed.'; try { msg = JSON.parse(xhr.responseText).error || msg; } catch {}
+      reject(new Error(msg));
+    };
+    xhr.onerror   = () => reject(new Error('Network error.'));
+    xhr.ontimeout = () => reject(new Error('Upload timed out.'));
+    xhr.timeout   = 10 * 60 * 1000;
+    xhr.send(JSON.stringify({ name: file.name, content: b64 }));
+  });
+}
+
+// ── Chunked upload (files > CHUNK_THRESHOLD = 5 MB) ──────────────────
+// Slices the file in the browser, base64-encodes each slice, sends JSON
+// to /api/upload-chunk, collects blob SHAs, then calls /api/finalize-upload.
 async function chunkedUpload(file, idx) {
   const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
   const blobs       = [];
 
   for (let i = 0; i < totalChunks; i++) {
-    const start  = i * CHUNK_SIZE;
-    const end    = Math.min(start + CHUNK_SIZE, file.size);
-    const slice  = file.slice(start, end);        // File.slice() is synchronous, no memory copy
+    const start = i * CHUNK_SIZE;
+    const end   = Math.min(start + CHUNK_SIZE, file.size);
+    const slice = file.slice(start, end);
 
-    // Update progress bar: each chunk is (1/totalChunks) of 90% of the bar
     const chunkProgressBase = Math.round((i / totalChunks) * 90);
 
-    // XHR the chunk with progress
     const result = await xhrChunk(slice, file.name, i, totalChunks, idx, chunkProgressBase, totalChunks);
     blobs.push({ index: i, blobSha: result.blobSha, size: slice.size });
   }
@@ -797,22 +812,21 @@ async function chunkedUpload(file, idx) {
   setQ(idx, 'go', 99);
 }
 
-function xhrChunk(blob, name, chunkIndex, totalChunks, queueIdx, progressBase, totalChunkCount) {
-  return new Promise((resolve, reject) => {
-    const fd = new FormData();
-    fd.append('name', name);
-    fd.append('file', blob);
-    fd.append('chunkIndex', String(chunkIndex));
-    fd.append('totalChunks', String(totalChunks));
+// Browser base64-encodes the slice, then XHRs JSON to Worker.
+// Worker forwards the base64 string directly to GitHub — no re-encoding.
+async function xhrChunk(blob, name, chunkIndex, totalChunks, queueIdx, progressBase, totalChunkCount) {
+  // Encode in browser (free — browser built-in, no JS CPU)
+  const b64 = await blobToBase64(blob);
 
+  return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
     xhr.open('POST', '/api/upload-chunk');
     xhr.setRequestHeader('X-Session-Token', SESSION_TOKEN);
+    xhr.setRequestHeader('Content-Type', 'application/json');
 
     xhr.upload.onprogress = e => {
       if (e.lengthComputable) {
-        const chunkFraction = e.loaded / e.total;
-        const overall = progressBase + Math.round(chunkFraction * (90 / totalChunkCount));
+        const overall = progressBase + Math.round((e.loaded / e.total) * (90 / totalChunkCount));
         setQ(queueIdx, 'go', Math.min(90, overall));
       }
     };
@@ -827,8 +841,8 @@ function xhrChunk(blob, name, chunkIndex, totalChunks, queueIdx, progressBase, t
 
     xhr.onerror   = () => reject(new Error(`Network error on chunk ${chunkIndex + 1}.`));
     xhr.ontimeout = () => reject(new Error(`Chunk ${chunkIndex + 1} timed out.`));
-    xhr.timeout   = 5 * 60 * 1000; // 5 min per 90 MB chunk
-    xhr.send(fd);
+    xhr.timeout   = 5 * 60 * 1000;
+    xhr.send(JSON.stringify({ name, chunkIndex, totalChunks, content: b64 }));
   });
 }
 
